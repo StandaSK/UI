@@ -8,20 +8,29 @@ public class Genetics {
 		List<StepSequence> individuals = new ArrayList<StepSequence>(count);
 		
 		while (count > 0) {
-			individuals.add(null);
+			individuals.add(Evolution.genereate());
 			count--;
 		}
 		
 		return individuals;
 	}
 	
+	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals) {
+		
+		for (StepSequence ss : individuals) {
+			System.out.printf(ss.toString());
+		}
+		
+		return null;
+	}
+	
 	/* Mutácia náhodného kroku jednica ss */
 	public static StepSequence mutate(StepSequence ss) {
 		int[] steps = ss.getSteps();
-		/* Vygenerovanie nahodneho cisla pre poradie kroku */
+		/* Vygenerovanie náhodného èísla pre poradie kroku */
 		int rndPos = (int) Math.floor(Math.random() * steps.length);
-		/* Vygenerovanie nahodneho kroku */
-		int rndNum = (int) Math.floor(Math.random() * 255);
+		/* Vygenerovanie náhodného kroku */
+		int rndNum = (int) Math.floor(Math.random() * Main.MAX_VALUES);
 		
 		
 		steps[rndPos] = rndNum;

@@ -4,10 +4,12 @@ import java.util.*;
 
 public class Main {
 	public final static int MEMORY_CELL_COUNT = 64;
+	public final static int STARTING_MEMORY_CELL_COUNT = 16;
 	public final static int MAX_STEP_COUNT = 500;
 	public final static int INDIVIDUAL_COUNT = 20;
 	public final static int GENERATION_COUNT = 200;
 	public final static int TREASURE_COUNT = 7;
+	public final static int MAX_VALUES = 255;
 	
 	public static void main() {
 		CustomVector mapSize = new CustomVector(7,7);
@@ -28,6 +30,34 @@ public class Main {
 					map.findTreasures(i, new CustomVector(startingPosition.getX(), startingPosition.getY()));
 				}
 			}
+			
+			/* Vytvorenie novej gener·cie jednotlivcov */
+			individuals = Genetics.createNewGeneration(individuals);
 		}
+	}
+	
+	/**
+	 * Zmeni ËÌslo na bin·rne - do Stringu
+	 * @param number menenÈ ËÌslo
+	 * @return bin·rne ËÌslo, reprezentovanÈ Stringom
+	 */
+	public static String getBytesOfInt(int number){
+		return String.format("%8s", Integer.toBinaryString(number & 0xFF)).replace(' ', '0');
+	}
+	
+	/**
+	 * ZmenÌ bin·rne ËÌslo reprezentovanÈ Stringom sp‰ù na integer
+	 * @param val bin·rne ËÌslo, reprezentovanÈ Stringom
+	 * @return zmenenÈ ËÌslo
+	 */
+	public static int getIntValue(String val){
+		int result = 0;
+		int num = val.length();
+		
+		for (int i = 0; i < num; i++)
+			if (val.charAt(i) == '1')
+				result += Math.pow(2, num - i - 1);
+		
+		return result;
 	}
 }
