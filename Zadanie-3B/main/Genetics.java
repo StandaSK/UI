@@ -3,7 +3,7 @@ package main;
 import java.util.*;
 
 public class Genetics {
-	/* Inicializácia prvých jedincov */
+	/* Inicializácia prvých count jedincov */
 	public static List<StepSequence> initialize(int count) {
 		List<StepSequence> individuals = new ArrayList<StepSequence>(count);
 		
@@ -15,13 +15,20 @@ public class Genetics {
 		return individuals;
 	}
 	
+	/**
+	 * Zo starej generácie individuals vytvorí novú
+	 * @param individuals stará generácia
+	 * @return nová generácia
+	 */
 	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals) {
+		
+		List<StepSequence> newGeneration = new ArrayList<StepSequence>();
 		
 		for (StepSequence ss : individuals) {
 			System.out.printf(ss.toString());
 		}
 		
-		return null;
+		return newGeneration;
 	}
 	
 	/* Mutácia náhodného kroku jednica ss */
