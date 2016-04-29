@@ -2,6 +2,8 @@ package mains;
 
 import java.util.*;
 
+import customType.*;
+
 public class Map {
 	private CustomVector size;
 	private Set<CustomVector> treasureSet = new HashSet<CustomVector>();

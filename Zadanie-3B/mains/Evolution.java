@@ -2,6 +2,8 @@ package mains;
 
 import java.util.*;
 
+import customType.*;
+
 public class Evolution {
 	private static Set<String> allSteps = new HashSet<String>();
 	StringBuilder sb = new StringBuilder();
@@ -14,14 +16,14 @@ public class Evolution {
 	 * @return Novo vygenerovaný jedinec
 	 */
 	public static StepSequence generate() {
-		int[] steps = new int[Main.MEMORY_CELL_COUNT];
+		int[] steps = new int[MainFile.MEMORY_CELL_COUNT];
 		
 		String path = "";
 		
 		while (allSteps.contains(path)) {
 			path = "";
-			for (int i = 0; i < Main.STARTING_MEMORY_CELL_COUNT; i++) {
-				steps[i] = (int) Math.floor(Math.random() * Main.MAX_VALUES);
+			for (int i = 0; i < MainFile.STARTING_MEMORY_CELL_COUNT; i++) {
+				steps[i] = (int) Math.floor(Math.random() * MainFile.MAX_VALUES);
 				path += steps[i];
 			}
 		}
@@ -33,7 +35,7 @@ public class Evolution {
 		operationCounter = 0;
 		newStepIndex = 0;
 		
-		while (sb.length() < 49 && newStepIndex < Main.MEMORY_CELL_COUNT && operationCounter < Main.MAX_STEP_COUNT) {
+		while (sb.length() < 49 && newStepIndex < MainFile.MEMORY_CELL_COUNT && operationCounter < MainFile.MAX_STEP_COUNT) {
 			operate();
 		}
 		
@@ -43,24 +45,24 @@ public class Evolution {
 	
 	private void operate() {
 		operationCounter++;
-		String operator = Main.getBytesOfInt(newSteps[newStepIndex]).substring(0, 2);
+		String operator = MainFile.getBytesOfInt(newSteps[newStepIndex]).substring(0, 2);
 		int temp;
 		
 		switch (operator) {
 			case "00":
-				temp = Main.getIntValue(Main.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
 				newSteps[temp] += 1;
 				break;
 			case "01":
-				temp = Main.getIntValue(Main.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
 				newSteps[temp] -= 1;
 				break;
 			case "10":
-				temp = Main.getIntValue(Main.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
 				newStepIndex = temp;
 				break;
 			case "11":
-				temp = Main.getIntValue(Main.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
 				sb.append(getLetter(newSteps[temp]));
 				break;
 		}
@@ -68,7 +70,7 @@ public class Evolution {
 	
 	/* Zo vstupu zisti kroky */
 	private char getLetter(int tmp){
-		byte[] num = Main.getBytesOfInt(tmp).getBytes();
+		byte[] num = MainFile.getBytesOfInt(tmp).getBytes();
 		int count = 0;
 		for (int i = 0; i < num.length; i++)
 			if (num[i] == 49)

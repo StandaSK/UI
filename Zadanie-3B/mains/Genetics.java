@@ -3,6 +3,8 @@ package mains;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import customType.*;
+
 public class Genetics {
 	/* Inicializácia prvých count jedincov */
 	public static List<StepSequence> initialize(int count) {
@@ -30,18 +32,18 @@ public class Genetics {
 			if (a.getFitness() > b.getFitness()) return -1;
 			else if (a.getFitness() < b.getFitness()) return 1;
 			return 0; })
-			.limit((int) (Main.ELITARISM_RATE * size))
+			.limit((int) (MainFile.ELITARISM_RATE * size))
 			.collect(Collectors.toList());
 		
 		/* Vygenerovanie nových (Main.NEW_INDIVIDUAL_RATE * size) náhodných jedincov */
-		for(int i = 0; i < Main.NEW_INDIVIDUAL_RATE * size; i++)
+		for(int i = 0; i < MainFile.NEW_INDIVIDUAL_RATE * size; i++)
 			newGeneration.add(Evolution.generate());
 		
 		/* Mutovanie starej generácie do novej */
 		for (StepSequence ss : individuals) {
-			if (newGeneration.size() == Main.INDIVIDUAL_COUNT) { break; }
+			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
-			if (Main.MUTATION_RATE > Math.random()) {
+			if (MainFile.MUTATION_RATE > Math.random()) {
 				newGeneration.add(mutate(ss));
 			}
 		}
@@ -55,7 +57,7 @@ public class Genetics {
 		/* Vygenerovanie náhodného èísla pre poradie kroku */
 		int rndPos = (int) Math.floor(Math.random() * steps.length);
 		/* Vygenerovanie náhodného kroku */
-		int rndNum = (int) Math.floor(Math.random() * Main.MAX_VALUES);
+		int rndNum = (int) Math.floor(Math.random() * MainFile.MAX_VALUES);
 		
 		
 		steps[rndPos] = rndNum;
