@@ -13,7 +13,7 @@ public class Evolution {
 	 * Úvodná inicializácia prvých STARTING_MEMORY_CELL_COUNT krokov jedinca
 	 * @return Novo vygenerovaný jedinec
 	 */
-	public static StepSequence genereate() {
+	public static StepSequence generate() {
 		int[] steps = new int[Main.MEMORY_CELL_COUNT];
 		
 		String path = "";

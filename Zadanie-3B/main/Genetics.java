@@ -1,6 +1,7 @@
 package main;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Genetics {
 	/* Inicializácia prvých count jedincov */
@@ -8,7 +9,7 @@ public class Genetics {
 		List<StepSequence> individuals = new ArrayList<StepSequence>(count);
 		
 		while (count > 0) {
-			individuals.add(Evolution.genereate());
+			individuals.add(Evolution.generate());
 			count--;
 		}
 		
@@ -21,11 +22,28 @@ public class Genetics {
 	 * @return nová generácia
 	 */
 	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals) {
+		int size = individuals.size();
+		List<StepSequence> newGeneration = new ArrayList<StepSequence>(size);
 		
-		List<StepSequence> newGeneration = new ArrayList<StepSequence>();
+		/* Výber (Main.ELITARISM_LEVEL * size) najlepších jedincov */
+		newGeneration = individuals.stream().sorted((a, b) -> {
+			if (a.getFitness() < b.getFitness()) return 1;
+			else if (a.getFitness() > b.getFitness()) return -1;
+			return 0; })
+			.limit((int) (Main.ELITARISM_RATE * size))
+			.collect(Collectors.toList());
 		
+		/* Vygenerovanie nových (Main.NEW_INDIVIDUAL_RATE * size) náhodných jedincov */
+		for(int i = 0; i < Main.NEW_INDIVIDUAL_RATE * size; i++)
+			newGeneration.add(Evolution.generate());
+		
+		/* Mutovanie starej generacie do novej */
 		for (StepSequence ss : individuals) {
-			System.out.printf(ss.toString());
+			if (newGeneration.size() == Main.INDIVIDUAL_COUNT) { break; }
+			
+			if (Main.MUTATION_RATE > Math.random()) {
+				newGeneration.add(mutate(ss));
+			}
 		}
 		
 		return newGeneration;

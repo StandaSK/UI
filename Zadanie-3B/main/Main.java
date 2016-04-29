@@ -10,7 +10,9 @@ public class Main {
 	public final static int GENERATION_COUNT = 200;
 	public final static int TREASURE_COUNT = 7;
 	public final static int MAX_VALUES = 255;
-	public final static double ELITARISM_LEVEL = 0.10;
+	public final static double ELITARISM_RATE = 0.1;
+	public final static double NEW_INDIVIDUAL_RATE = 0.3;
+	public final static double MUTATION_RATE = 0.6;
 	
 	public static void main() {
 		CustomVector mapSize = new CustomVector(7,7);
