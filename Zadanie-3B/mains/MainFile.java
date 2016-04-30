@@ -24,17 +24,22 @@ public class MainFile {
 			new CustomVector(4,5), new CustomVector(6,3));
 		Evolution evolution = new Evolution();
 		
+		/* Vytvorenie úvodnej generácie */
 		List<StepSequence> individuals = Genetics.initialize(INDIVIDUAL_COUNT);
 		
+		/* Tvorenie nasledujúcich generácií */
 		for (int j = 0; j < GENERATION_COUNT; j++) {
 			for (StepSequence i : individuals) {
 				if (i.isExists() == false) {
-					evolution.create(i);
+					evolution.create(i, mapSize);
 				}
 				if (i.isTracked() == false) {
 					map.findTreasures(i, new CustomVector(startingPosition.getX(), startingPosition.getY()));
 				}
 			}
+			
+			//System.out.println("j: " + j);
+			Evolution.output(individuals, j);
 			
 			/* Vytvorenie novej generácie jednotlivcov */
 			individuals = Genetics.createNewGeneration(individuals);

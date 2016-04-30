@@ -10,10 +10,8 @@ public class Genetics {
 	public static List<StepSequence> initialize(int count) {
 		List<StepSequence> individuals = new ArrayList<StepSequence>(count);
 		
-		while (count > 0) {
+		for (int i = 0; i < count; i++)
 			individuals.add(Evolution.generate());
-			count--;
-		}
 		
 		return individuals;
 	}
