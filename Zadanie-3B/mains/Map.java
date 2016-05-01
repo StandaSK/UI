@@ -26,7 +26,7 @@ public class Map {
 		Set<CustomVector> treasures = new HashSet<CustomVector>(treasureSet);
 		
 		//System.out.println(path.isEmpty());
-		
+				
 		while (!path.isEmpty()) {
 			if (path.startsWith("l")) {
 				/* Krok do¾ava */
@@ -54,12 +54,18 @@ public class Map {
 				return;
 			}
 			
+			System.out.println("Act Position: " + position.getX() + "\t" + position.getY() +
+					"\tStep Count: " + stepCount);
+			
 			/* Ak je súèasný bod jedným z pokladov */
 			if (treasures.contains(position)) {
 				foundTreasureCount++;
 				treasures.remove(position);
+				System.out.println("Nasiel sa poklad!!!");
 			}
-			
+
+			//System.out.println("FT: " + path);
+
 			stepCount++;
 			path = path.substring(1);
 		}

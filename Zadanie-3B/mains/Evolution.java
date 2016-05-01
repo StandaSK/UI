@@ -132,7 +132,7 @@ public class Evolution {
 		//System.out.println(generation);
 		System.out.println(generation + ". Generation: Operation Counter: " + operationCounter + "\nBest: "
 				+ best.toString() + "All Step Count: " + allSteps.size() + ", Sources Size: " + sources.size()
-				+ ", List Size: " + size + ", Fitness Sum: " + fitnessSum + ", Treasure Sum: "
+				+ ", List Size: " + size + ", Max Fitness: " + maxFitness + ", Fitness Sum: " + fitnessSum + ", Treasure Sum: "
 				+ treasureSum + ", Step Sum: " + stepSum);
 	}
 }
