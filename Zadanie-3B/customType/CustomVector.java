@@ -9,6 +9,10 @@ public class CustomVector {
 		this.setY(y);
 	}
 	
+	public String toString(){
+		return "[" + this.x + ", " + this.y + "]";
+	}
+	
 	/**
 	 * Funkcia zistí èi sa bod nachádza v obdåžniku
 	 * @param pos poèiatoèná pozícia obdåžnika

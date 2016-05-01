@@ -17,6 +17,7 @@ public class StepSequence {
 	/* Konštruktor */
 	public StepSequence(int[] steps) {
 		this.setSteps(steps);
+		//this.setStepCount(steps.length);
 	}
 	
 	/* Slúži na výpis atribútov jedinca */
