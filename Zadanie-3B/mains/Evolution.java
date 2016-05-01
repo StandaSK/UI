@@ -13,7 +13,7 @@ public class Evolution {
 	private int[] newSteps;
 	
 	/**
-	 * Úvodná inicializácia prvých STARTING_MEMORY_CELL_COUNT krokov jedinca
+	 * Úvodná inicializácia prvých STARTING_MEMORY_CELL_COUNT génov jedinca
 	 * @return Novo vygenerovaný jedinec
 	 */
 	public static StepSequence generate() {
@@ -29,10 +29,7 @@ public class Evolution {
 				path += steps[i];
 			}
 		}
-		sources.add(path);
-		
-		//for (int i = 0; i < MainFile.MEMORY_CELL_COUNT; i++) System.out.println(MainFile.getBytesOfInt(steps[i]));
-		
+		sources.add(path);		
 		return new StepSequence(steps);
 	}
 	
@@ -80,13 +77,14 @@ public class Evolution {
 	
 	/* Zo vstupu zistí kroky */
 	private char getStepAsChar(int tmp) {
+		int mapSize = 49;
 		byte[] num = MainFile.getBytesOfInt(tmp).getBytes();
 		int count = 0;
 		
 		//System.out.println("GSAC: " + tmp);
 		
 		for (int i = 0; i < num.length; i++)
-			if (num[i] == 49) {
+			if (num[i] == mapSize) {
 				count++;
 				//System.out.println(count);
 			}
@@ -103,11 +101,11 @@ public class Evolution {
 	
 	public static void output(List<StepSequence> list, int generation) {
 		int minStep = -1;
-		float maxFitness = 0;
+		double maxFitness = 0;
 		float fitnessSum = 0;
 		float treasureSum = 0;
 		float stepSum = 0;
-		StepSequence best = null;
+		StepSequence best = list.get(0);
 		
 		for (StepSequence ss : list) {
 			//System.out.println("Fitness: " + ss.getFitness());

@@ -12,9 +12,9 @@ public class MainFile {
 	public final static int GENERATION_COUNT = 200;
 	public final static int TREASURE_COUNT = 7;
 	public final static int MAX_VALUES = 255;
-	public final static double ELITARISM_RATE = 0.1;
+	public final static double ELITARISM_RATE = 0.2;
 	public final static double NEW_INDIVIDUAL_RATE = 0.3;
-	public final static double MUTATION_RATE = 0.6;
+	public final static double MUTATION_RATE = 0.5;
 	
 	public static void main(String[] args) {
 		CustomVector mapSize = new CustomVector(7,7);
@@ -30,9 +30,11 @@ public class MainFile {
 		/* Tvorenie nasledujúcich generácií */
 		for (int j = 0; j < GENERATION_COUNT; j++) {
 			for (StepSequence i : individuals) {
+				/* Ak ešte nebol spracovaný */
 				if (i.isExecuted() == false) {
 					evolution.execute(i, mapSize);
 				}
+				/* Ak ešte neh¾adal poklady */
 				if (i.isTracked() == false) {
 					map.findTreasures(i, new CustomVector(startingPosition.getX(), startingPosition.getY()));
 				}

@@ -44,18 +44,17 @@ public class Map {
 				/* Krok dole */
 				position.setY(position.getY() - 1);
 			}
-			
+						
 			/* Ak sa súèasný bod nenachádza v obåžniku ve¾kosti X+1, Y+1 */
 			if (!position.isInRectangle(new CustomVector(0,0),
-					new CustomVector(size.getX() + 1, size.getY() + 1))) {
+					new CustomVector(size.getX(), size.getY()))) {
 				/* Oznaèí sa tento jedinec ako prejdený a h¾adanie skonèí */
 				//System.out.println("FTC: " + foundTreasureCount + "\tSC: " + stepCount);
 				ss.track(foundTreasureCount, stepCount);
 				return;
 			}
 			
-			System.out.println("Act Position: " + position.getX() + "\t" + position.getY() +
-					"\tStep Count: " + stepCount);
+			//System.out.println("Act Position: " + position + "\tStep Count: " + stepCount);
 			
 			/* Ak je súèasný bod jedným z pokladov */
 			if (treasures.contains(position)) {
