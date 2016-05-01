@@ -10,7 +10,7 @@ public class CustomVector {
 	}
 	
 	public String toString(){
-		return "[" + this.x + ", " + this.y + "]";
+		return x + "," + y;
 	}
 	
 	/**
@@ -20,7 +20,8 @@ public class CustomVector {
 	 * @return TRUE ak sa v òom nachádza, FALSE ak nie
 	 */
 	public boolean isInRectangle(CustomVector pos, CustomVector size) {
-		return (x > pos.x) && (x < pos.x + size.x) && (y > pos.y) && (y < pos.y + size.y);
+		//System.out.println(pos.x + "\t" + (pos.x + size.x) + "\t" + pos.y + "\t" +(pos.y + size.y));
+		return (x >= pos.x) && (x < pos.x + size.x) && (y >= pos.y) && (y < pos.y + size.y);
 	}
 	
 	/* Gettery */

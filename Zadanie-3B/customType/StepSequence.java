@@ -22,9 +22,9 @@ public class StepSequence {
 	
 	/* Slúži na výpis atribútov jedinca */
 	public String toString() {
-		return ("Krokov: " + stepCount + '\n' +
+		return ("Steps: " + stepCount + '\n' +
 				//MainFile.getBytesOfInt(steps[63]) + '\n' +
-				"Pokladov: " + treasureCount + '\n' +
+				"Treasures: " + treasureCount + '\n' +
 				"Fitness: " + fitness + '\n');
 	}
 	
@@ -33,7 +33,8 @@ public class StepSequence {
 		this.setTreasureCount(treasureCount);
 		this.setStepCount(stepCount);
 		this.setTracked(true);
-		this.setFitness(treasureCount - (stepCount / 1000));
+		this.setFitness((float) treasureCount - ((float) stepCount / 1000));
+		//System.out.println("Track:\t" + stepCount + "\t" + fitness);
 	}
 	
 	/* Gettery */
