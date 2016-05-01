@@ -1,5 +1,7 @@
 package customType;
 
+//import mains.MainFile;
+
 public class StepSequence {
 	private int treasureCount;
 	private int stepCount;
@@ -20,6 +22,7 @@ public class StepSequence {
 	/* Slúži na výpis atribútov jedinca */
 	public String toString() {
 		return ("Krokov: " + stepCount + '\n' +
+				//MainFile.getBytesOfInt(steps[63]) + '\n' +
 				"Pokladov: " + treasureCount + '\n' +
 				"Fitness: " + fitness + '\n');
 	}
