@@ -10,7 +10,7 @@ public class StepSequence {
 	private String path;
 	
 	private boolean tracked;
-	private boolean exists;
+	private boolean executed;
 	
 	/* Konštruktor */
 	public StepSequence(int[] steps) {
@@ -39,7 +39,7 @@ public class StepSequence {
 	public float getFitness() { return fitness; }
 	public String getPath() { return path; }
 	public boolean isTracked() { return tracked; }
-	public boolean isExists() { return exists; }
+	public boolean isExecuted() { return executed; }
 	/* Settery */
 	public void setTreasureCount(int treasureCount) { this.treasureCount = treasureCount; }
 	public void setStepCount(int stepCount) { this.stepCount = stepCount; }
@@ -47,8 +47,8 @@ public class StepSequence {
 	public void setFitness(float fitness) { this.fitness = fitness; }
 	public void setPath(String path) {
 		this.path = path;
-		this.setExists(true);
+		this.setExecuted(true);
 	}
 	public void setTracked(boolean tracked) { this.tracked = tracked; }
-	public void setExists(boolean exists) { this.exists = exists; }
+	public void setExecuted(boolean exists) { this.executed = exists; }
 }
