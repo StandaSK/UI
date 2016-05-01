@@ -25,6 +25,8 @@ public class Map {
 		String path = ss.getPath();
 		Set<CustomVector> treasures = new HashSet<CustomVector>(treasureSet);
 		
+		//System.out.println(path.isEmpty());
+		
 		while (!path.isEmpty()) {
 			if (path.startsWith("l")) {
 				/* Krok do¾ava */
@@ -47,6 +49,7 @@ public class Map {
 			if (!position.isInRectangle(new CustomVector(0,0),
 					new CustomVector(size.getX() + 1, size.getY() + 1))) {
 				/* Oznaèí sa tento jedinec ako prejdený a h¾adanie skonèí */
+				//System.out.println("FTC: " + foundTreasureCount + "\tSC: " + stepCount);
 				ss.track(foundTreasureCount, stepCount);
 				return;
 			}
@@ -61,6 +64,7 @@ public class Map {
 			path = path.substring(1);
 		}
 		/* Tento jedinec sa oznaèí ako prejdený */
+		//System.out.println("FTC: " + foundTreasureCount + "\tSC: " + stepCount + "   KASUHFJSHAKGFJASF");
 		ss.track(foundTreasureCount, stepCount);
 	}
 	

@@ -6,7 +6,7 @@ import customType.*;
 
 public class MainFile {
 	public final static int MEMORY_CELL_COUNT = 64;
-	public final static int STARTING_MEMORY_CELL_COUNT = 32;
+	public final static int STARTING_MEMORY_CELL_COUNT = 16;
 	public final static int MAX_STEP_COUNT = 500;
 	public final static int INDIVIDUAL_COUNT = 50;
 	public final static int GENERATION_COUNT = 200;
