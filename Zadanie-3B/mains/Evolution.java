@@ -21,7 +21,8 @@ public class Evolution {
 		
 		String path = "";
 		
-		while (allSteps.contains(path)) {
+		/* Vygenerovanie nových krokov, while zabezpeèuje aby sa neopakovali */
+		while (sources.contains(path)) {
 			path = "";
 			for (int i = 0; i < MainFile.STARTING_MEMORY_CELL_COUNT; i++) {
 				steps[i] = (int) Math.floor(Math.random() * MainFile.MAX_VALUES);
@@ -32,13 +33,12 @@ public class Evolution {
 		return new StepSequence(steps);
 	}
 	
-	public void create(StepSequence ss, CustomVector mapSize) {
-		int mapPositionCount = ((int) mapSize.getX()) * ((int) mapSize.getY());
+	public void execute(StepSequence ss, CustomVector mapSize) {
 		operationCounter = 0;
 		newStepIndex = 0;
 		this.newSteps = ss.getSteps();
 		
-		while (sb.length() < mapPositionCount && newStepIndex >= 0 && newStepIndex < MainFile.MEMORY_CELL_COUNT && operationCounter < MainFile.MAX_STEP_COUNT) {
+		while (newStepIndex >= 0 && newStepIndex < MainFile.MEMORY_CELL_COUNT && operationCounter < MainFile.MAX_STEP_COUNT) {
 			operate();
 		}
 		
@@ -49,35 +49,42 @@ public class Evolution {
 	private void operate() {
 		operationCounter++;
 		String operator = MainFile.getBytesOfInt(newSteps[newStepIndex]).substring(0, 2);
-		int temp;
+		int temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+		
+		//System.out.println("Operate: " + operator);
 		
 		switch (operator) {
 			case "00":
-				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				/* Inkrementácia */
 				newSteps[temp] += 1;
 				break;
 			case "01":
-				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				/* Dekrementácia */
 				newSteps[temp] -= 1;
 				break;
 			case "10":
-				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				/* Skok */
 				newStepIndex = temp;
 				break;
 			case "11":
-				temp = MainFile.getIntValue(MainFile.getBytesOfInt(newSteps[newStepIndex++]).substring(2, 8));
+				/* Výpis do StringBuilderu */
 				sb.append(getStepAsChar(newSteps[temp]));
 				break;
 		}
 	}
 	
 	/* Zo vstupu zistí kroky */
-	private char getStepAsChar(int tmp){
+	private char getStepAsChar(int tmp) {
 		byte[] num = MainFile.getBytesOfInt(tmp).getBytes();
 		int count = 0;
+		
+		//System.out.println("GSAC: " + tmp);
+		
 		for (int i = 0; i < num.length; i++)
-			if (num[i] == 49)
+			if (num[i] == 49) {
 				count++;
+				//System.out.println(count);
+			}
 		
 		if (count <= 2)
 			return 'h';
@@ -89,7 +96,7 @@ public class Evolution {
 		return 'l';
 	}
 	
-	public static void output(List<StepSequence> list, int num) {
+	public static void output(List<StepSequence> list, int generation) {
 		int maxTreasures = 0;
 		int minStep = -1;
 		float maxFitness = 0;
@@ -97,7 +104,10 @@ public class Evolution {
 		float treasureSum = 0;
 		float stepSum = 0;
 		StepSequence best = null;
+		
 		for (StepSequence ss : list) {
+			//System.out.println("Fitness: " + ss.getFitness());
+			
 			if (ss.getTreasureCount() > maxTreasures)
 				maxTreasures = ss.getTreasureCount();
 			
@@ -117,7 +127,7 @@ public class Evolution {
 			stepSum += ss.getStepCount();
 		}
 		float size = list.size();
-		System.out.println("num: " + num + ", operacii: " + operationCounter + ", "
+		System.out.println(generation + ".  OpCounter: " + operationCounter + "   "
 				+ best + ", paths/sources: " + allSteps.size() + "/" + sources.size()
 				+ ", count: " + size + ", avgFit: " + fitnessSum / size + ", avgTrea: "
 				+ treasureSum / size + ", avgSteps: " + stepSum / size);

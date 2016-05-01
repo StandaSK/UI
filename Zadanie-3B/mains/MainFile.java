@@ -6,9 +6,9 @@ import customType.*;
 
 public class MainFile {
 	public final static int MEMORY_CELL_COUNT = 64;
-	public final static int STARTING_MEMORY_CELL_COUNT = 16;
+	public final static int STARTING_MEMORY_CELL_COUNT = 32;
 	public final static int MAX_STEP_COUNT = 500;
-	public final static int INDIVIDUAL_COUNT = 20;
+	public final static int INDIVIDUAL_COUNT = 50;
 	public final static int GENERATION_COUNT = 200;
 	public final static int TREASURE_COUNT = 7;
 	public final static int MAX_VALUES = 255;
@@ -30,15 +30,14 @@ public class MainFile {
 		/* Tvorenie nasledujúcich generácií */
 		for (int j = 0; j < GENERATION_COUNT; j++) {
 			for (StepSequence i : individuals) {
-				if (i.isExists() == false) {
-					evolution.create(i, mapSize);
+				if (i.isExecuted() == false) {
+					evolution.execute(i, mapSize);
 				}
 				if (i.isTracked() == false) {
 					map.findTreasures(i, new CustomVector(startingPosition.getX(), startingPosition.getY()));
 				}
 			}
 			
-			//System.out.println("j: " + j);
 			Evolution.output(individuals, j);
 			
 			/* Vytvorenie novej generácie jednotlivcov */
@@ -60,7 +59,7 @@ public class MainFile {
 	 * @param val binárne èíslo, reprezentované Stringom
 	 * @return zmenené èíslo
 	 */
-	public static int getIntValue(String val){
+	public static int getIntValue(String val) {
 		int result = 0;
 		int num = val.length();
 		

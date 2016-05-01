@@ -15,6 +15,7 @@ public class Map {
 		for (CustomVector t : treasures) {
 			this.treasureSet.add(t);
 		}
+		
 	}
 	
 	/* Nájdenie pokladov */
