@@ -6,15 +6,16 @@ import customType.*;
 
 public class MainFile {
 	public final static int MEMORY_CELL_COUNT = 64;
-	public final static int STARTING_MEMORY_CELL_COUNT = 16;
+	public final static int STARTING_MEMORY_CELL_COUNT = 32;
 	public final static int MAX_STEP_COUNT = 500;
-	public final static int INDIVIDUAL_COUNT = 50;
+	public final static int INDIVIDUAL_COUNT = 1000;
 	public final static int GENERATION_COUNT = 200;
-	public final static int TREASURE_COUNT = 7;
+	public final static int TREASURE_COUNT = 5;
 	public final static int MAX_VALUES = 255;
-	public final static double ELITARISM_RATE = 0.2;
+	public final static double ELITARISM_RATE = 0.1;
 	public final static double NEW_INDIVIDUAL_RATE = 0.3;
-	public final static double MUTATION_RATE = 0.5;
+	public final static double MUTATION_RATE = 0.2;
+	public final static double CROSSOVER_RATE = 0.5;
 	
 	public static void main(String[] args) {
 		CustomVector mapSize = new CustomVector(7,7);

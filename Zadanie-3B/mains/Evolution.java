@@ -125,12 +125,11 @@ public class Evolution {
 			treasureSum += ss.getTreasureCount();
 			stepSum += ss.getStepCount();
 		}
-		float size = list.size();
-		
+		int listSize = list.size();
 		//System.out.println(generation);
 		System.out.println(generation + ". Generation: Operation Counter: " + operationCounter + "\nBest: "
 				+ best.toString() + "All Step Count: " + allSteps.size() + ", Sources Size: " + sources.size()
-				+ ", List Size: " + size + ", Max Fitness: " + maxFitness + ", Fitness Sum: " + fitnessSum + ", Treasure Sum: "
-				+ treasureSum + ", Step Sum: " + stepSum);
+				+ ", List Size: " + listSize + ", Fitness Avg: " + fitnessSum/listSize
+				+ ", Treasure Avg: " + treasureSum/listSize + ", Step Sum: " + stepSum);
 	}
 }

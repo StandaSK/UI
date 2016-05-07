@@ -60,7 +60,7 @@ public class Map {
 			if (treasures.contains(position)) {
 				foundTreasureCount++;
 				treasures.remove(position);
-				System.out.println("Nasiel sa poklad!!!");
+				//System.out.println("Nasiel sa poklad!!!");
 			}
 
 			//System.out.println("FT: " + path);

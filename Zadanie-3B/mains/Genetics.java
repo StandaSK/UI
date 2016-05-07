@@ -37,13 +37,23 @@ public class Genetics {
 		for(int i = 0; i < MainFile.NEW_INDIVIDUAL_RATE * size; i++)
 			newGeneration.add(Evolution.generate());
 		
-		/* Mutovanie starej generácie do novej */
+		/* Mutovanie a kríženie starej generácie do novej */
 		for (StepSequence ss : individuals) {
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
+			/* Mutovanie starej generácie do novej */
 			if (MainFile.MUTATION_RATE > Math.random()) {
 				newGeneration.add(mutate(ss));
 			}
+			
+			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
+			
+			/* Kríženie starej generácie do novej */
+			if (MainFile.CROSSOVER_RATE > Math.random()) {
+				newGeneration.add(crossOver(individuals.get((int) (Math.random() * individuals.size())), ss));
+			}
+			
+			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 		}
 		
 		return newGeneration;
@@ -60,5 +70,46 @@ public class Genetics {
 		
 		steps[rndPos] = rndNum;
 		return new StepSequence(steps);
+	}
+	
+	/* Kríženie dvoch jedincov do jedného */
+	public static StepSequence crossOver(StepSequence ss1, StepSequence ss2) {
+		int size;
+		int ss1Length = ss1.getSteps().length;
+		int ss2Length = ss2.getSteps().length;
+		boolean ss1Longer = false;
+		
+		if (ss1Length > ss2Length) {
+			size = ss1Length;
+			ss1Longer = true;
+		}
+		else size = ss2Length;
+		
+		int[] newSteps = new int[size];
+		
+		if (ss1Longer) {
+			for (int i = 0; i < ss2Length; i++) {
+				if (i%2 == 0) {
+					newSteps[i] = ss2.getSteps()[i];
+				}
+				else newSteps[i] = ss1.getSteps()[i];
+			}
+			for (int i = ss2Length; i < ss1Length; i++) {
+				newSteps[i] = ss1.getSteps()[i];
+			}
+		}
+		else {
+			for (int i = 0; i < ss1Length; i++) {
+				if (i%2 == 0) {
+					newSteps[i] = ss2.getSteps()[i];
+				}
+				else newSteps[i] = ss1.getSteps()[i];
+			}
+			for (int i = ss1Length; i < ss2Length; i++) {
+				newSteps[i] = ss2.getSteps()[i];
+			}
+		}
+		
+		return new StepSequence(newSteps);
 	}
 }
