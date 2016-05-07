@@ -13,6 +13,31 @@ public class CustomVector {
 		return x + "," + y;
 	}
 	
+	@Override
+	public int hashCode() {
+	    final int prime = 31;
+	    float result = 1;
+	    result = prime * result + x;
+	    result = prime * result + y;
+	    return (int) result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj)
+	        return true;
+	    if (obj == null)
+	        return false;
+	    if (getClass() != obj.getClass())
+	        return false;
+	    CustomVector other = (CustomVector) obj;
+	    if (x != other.x)
+	        return false;
+	    if (y != other.y)
+	        return false;
+	    return true;
+	}
+	
 	/**
 	 * Funkcia zistí èi sa bod nachádza v obdåžniku
 	 * @param pos poèiatoèná pozícia obdåžnika
