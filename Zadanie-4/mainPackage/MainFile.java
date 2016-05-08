@@ -42,7 +42,7 @@ public class MainFile {
 				}
 		    }
 			
-			if (DEBUG_INPUT) System.out.println("Vstupné pravidlá:\n" + rules);
+			if (DEBUG_INPUT) System.out.println("\nVstupné pravidlá:\n" + rules);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e2) {
@@ -52,8 +52,8 @@ public class MainFile {
 		//LOGIKA PROGRAMU
 		compareRuleFact(facts.get(0), rules.get(0));
 		
-		/* Prepisanie stareho suboru s faktami - na predvedenie je ukladane do ineho suboru */
-		try (PrintWriter out = new PrintWriter(new FileOutputStream("fakty(vystup).txt", false))){
+		/* Prepísanie starého súboru s faktami */
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(FACTS_FILE_NAME, false))) {
 			for (String str: facts) {
 				out.write(str + System.lineSeparator());
 			}
@@ -70,10 +70,12 @@ public class MainFile {
 	}
 	
 	private static String compareRuleFact(String rule, String fact) {
-		String ruleCopy = rule.replaceAll("[()]", "");
-		String factCopy = fact.replaceAll("[()]", "");
+		String[] ruleCopy = rule.replaceAll("[()]", "").split(" ");
+		String[] factCopy = fact.replaceAll("[()]", "").split(" ");
 		
-		System.out.println("RC:\n" + ruleCopy + "\nFC:\n" + factCopy);
+		for (String str : factCopy) {
+			
+		}
 		
 		return null;
 	}
