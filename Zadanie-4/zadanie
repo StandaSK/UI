@@ -1,0 +1,158 @@
+Definovanie problému
+Úlohou je vytvoriť jednoduchý dopredný produkčný systém, s prípadnými rozšíreniami, napríklad o kladenie otázok používateľovi alebo vyhodnocovanie matematických výrazov.
+
+Produkčný systém patrí medzi znalostné systémy, teda medzi systémy, ktoré so svojimi údajmi narábajú ako so znalosťami. Znalosti vyjadrujú nielen informácie o nejakom objekte, ale aj súvislosti medzi objektami, vlastnosti zvolených problémov a spôsoby hľadania ich riešenia. Znalostný systém je teda v najjednoduchšom prípade dvojica - program, ktorý dokáže všeobecne manipulovať so znalosťami a báza znalostí, ktorá opisuje problém a vzťahy, ktoré tam platia. Znalosti majú definovanú nejakú štruktúru a spôsob narábania s touto štruktúrou - to sa nazýva formalizmus reprezentácie znalostí. Program vie pracovať s týmto formalizmom, ale nesmie byť závislý od toho, aké znalosti spracováva, inak by to už nebol systém, kde riešenie úlohy je dané použitými údajmi.
+
+Produkčný systém na základe odvodzovacieho pravidla modus ponens (pravidlo odlúčenia) odvodzuje zo známych faktov a produkčných pravidiel nové fakty. Ak systém nemá dostatok vstupných údajov, môže klásť používateľovi otázky.
+Produkčný systém ako program nepozná konkrétne pravidlá ani fakty! Pozná len formalizmus, v tomto prípade štruktúru pravidiel a faktov a spôsob ich spracovania. Pozná akcie (pridaj, vymaž, ...), ktoré sa môžu vykonávať, lebo tie patria do opisu formalizmu.
+
+Táto úloha sa v tomto tvare nemôže riešiť v jazyku PROLOG, pretože PROLOG už má vstavaný mechanizmus na odvodzovanie znalostí a výsledný program by neriešil úlohu, len vhodne načítal znalosti. Ak má niekto záujem riešiť to v Jazyku prolog, dostane od cvičiaceho rozšírenú verziu zadania.
+
+K funkčnému programu je potrebné pripojiť aj dokumentáciu s opisom konkrétneho riešenia (reprezentácia znalostí, algoritmus, špecifické vlastnosti) a zhodnotením činnosti vytvoreného systému. Systém musí správne pracovať aspoň nad jednoduchou bázou znalostí (ekvivalentnou s prvou uvedenou), bázu znalostí si musí systém vedieť načítať zo súboru. Je vhodné si vytvoriť aj vlastné bázy znalostí a odovzdať spolu so zdrojovým kódom.
+Príklad jednoduchého dopredného produkčného systému
+Tento produkčný systém je napísaný v Javascripte. Na rozdiel od opisu algoritmu v tomto dokumente (krok 2.) používa paralelné testovanie podmienok. To znamená, že nájde všetky možné naviazania premenných v každej podmienke, vytvorí ich zmysluplné kombinácie, ošetrí špeciálne podmienky a výsledné naviazania použije na vygenerovanie alternatív pravej strany pravidla. Táto stratégia vyzerala byť vhodnejšia vzhľadom k použitiu polí v Javascripte. Môžete si všimnúť, že prevažná väčšina funkcií sa používa len na získanie použiteľných pravých strán pravidiel. Rozdiel je ešte v tom, že z bezpečnostných dôvodov systém nenačítava bázu z externých súborov.
+
+Produkčný systém je rozšírený o vyhodnotenie pravej strany pomocou eval. Pravidlá pre faktoriál odmazávajú zbytočné fakty a preto výpočet faktoriálu 100 trvá kratšie ako zistenie 16-tich nových rodinných vzťahov.
+
+Druhé rozšírenie predstavujú otázky na používateľa. Sú použité v báze znalostí Fiaty2. Komunikácia je jednoduchá - používateľ musí vždy napísať správnu odpoveď, inak inferencia nemá ako pokračovať. Všimnite si, že vhodné odpovede sú aspoň zakompované do otázky.
+Reprezentácia faktov a produkčných pravidiel
+Fakt zodpovedá výroku - ak ho systém obsahuje, považuje ho za pravdivý; ak ho neobsahuje, systém ho považuje za nepravdivý alebo nechá rozhodnúť používateľa. Fakty neobsahujú premenné!
+
+Fakty sa na začiatku riešenia nachádzajú v báze faktov, a sú reprezentované napríklad zoznamom (nejaká sekvencia)
+
+   (toto je fakt)
+
+Produkčné pravidlá sú uložené v báze pravidiel. Jednoduchý produkčný systém nesmie modifikovať pravidlá počas svojej činnosti.
+
+Pravidlo má tri časti:
+
+    meno
+    podmienka
+    akcie 
+
+Meno je identifikátorom pravidla a používa sa na sledovanie priebehu inferencie – je vhodné, aby systém mal jednoduchý aj rozšírený (debug, verbal) režim.
+
+Podmienka je konjunkciou elementárnych podmienok, to znamená, že podmienka pravidla je splnená, ak sú splnené všetky elementárne podmienky a nenastal konflikt v žiadnej premennej.
+Elementárna podmienka je buď vzorom faktu (môže obsahovať premenné)
+
+(?co je fakt)
+
+alebo je to špeciálna podmienka
+
+(<> ?a ?b)
+
+ktorá sa rozpozná na základe tvaru.
+Elementárna podmienka je splnená, ak sa zhoduje s niektorým faktom. Ak je to špeciálna podmienka, tak musí byť splnený ňou definovaný vzťah. Horeuvedená špeciálna podmienka je splnená, ak sa hodnota a nezhoduje s hodnotou b.
+Poznámka: špeciálne podmienky sa vyhodnocujú nakoniec, keď sú už hodnoty všetkých premenných známe.
+Akcie produkčného pravidla predstavujú zoznam akcií, ktoré sa aktivujú, ak je pravidlo určené na vykonanie. Pravidlá môžu obsahovať tri základné typy akcií:
+
+    PRIDAJ fakt (vzor)
+    VYMAZ fakt (vzor)
+    SPRAVA text 
+
+a voliteľné:
+
+    OTAZKA text (vzor)
+    AKTIVUJ mena_pravidel 
+
+Akcie môžu obsahovať tie premenné, ktoré sa nachádzajú v podmienke. Pretože splnená podmienka má naviazané všetky premenné, nahradia sa aj v akciách premenné konkrétnymi hodnotami a zapisuje, vymazáva, pridáva alebo zobrazuje sa len skutočný fakt (text).
+
+Príklady:
+
+BRAT:
+AK (?R je rodic ?X)(?R je rodic ?Y)(muz ?Y)(<> ?X ?Y)
+POTOM (PRIDAJ ?Y je brat ?X)(SPRAVA Viem ze ?X ma brata, vola sa ?Y)
+
+EXPORT17:
+AK (na sklade ?X)(poziadavka ?N na ?X)
+POTOM (PRIDAJ vydane ?X na ziadost ?N)(VYMAZ na sklade ?X)(VYMAZ poziadavka ?N na ?X)
+
+Opis inferencie
+Inferenčný cyklus:
+
+    Získaj zoznam známych faktov, choď na krok 2.
+    Vytvor zoznam všetkých aplikovateľných inštancií pravidiel, choď na krok 3.
+    Odfiltruj všetky také pravidlá, ktoré by nezmenili fakty v pracovnej pamäti. Choď na krok 4.
+    Ak neexistuje žiadna aplikovateľná inštancia pravidla na aplikovanie, koniec, inak choď na krok 5.
+    Stratégiou riešenia konfliktov vyber najvhodnejšie pravidlo a jeho najvhodnejšiu inštanciu. Choď na krok 6.
+    Vykonaj vybranú inštanciu pravidla. Choď na krok 2. 
+
+Podrobnejší opis niektorých krokov.
+
+Krok 2:
+Pre každé pravidlo vykonaj:
+nájdi všetky možné naviazania premenných pre podmienku pravidla
+pre každé naviazanie vykonaj:
+naviaž premenné v pravej strane strane pravidla
+výslednú pravú stranu ulož ako potenciálne aplikovateľnú inštanciu
+koniec
+koniec
+
+Krok 3.
+Inštancia pravidla je odfiltrovaná, ak okrem ďalej uvedených akcií neobsahuje nič iné:
+akcia “pridaj”, ktorá pridáva to, čo už v pracovnej pamäti je,
+akcia “vymaž”, ktorá chce z pracovnej pamäti rušiť to čo tam nie je,
+akcia “správa”.
+Z uvedeného vyplýva, že pravidlo, ktoré má ako akciu len nejakú správu, sa nikdy nevykoná!
+Má to zmysel, lebo si potrebujeme evidovať, že sa niečo vypísalo.
+
+Krok 4.
+Ak existuje aspoň jedna aplikovateľná inštancia pravidla, choď na krok 5. Inak
+Ak sa nemôžem pýtať používateľa, tak koniec. Inak
+Ak existuje pravidlo, ktoré má aspoň jednu elementárnu podmienku splnenú a aspoň jednu nesplnenú a ešte sme sa na jeho nesplnené podmienky nepýtali, opýtaj sa na nesplnené podmienky používateľa (a ulož prípadné fakty) a choď na krok 2.
+Inak koniec.
+
+Krok 5.
+Vyberáme zvyčajne prvú inštanciu prvého pravidla.
+Nezabudnite, že produkčný systém vykoná v jednom kroku len jediné pravidlo!
+
+Krok 6.
+Vykonajú sa všetky akcie, ktoré majú zmysel. Napr. žiadny fakt sa do pracovnej pamäti nezapíše dvakrát.
+
+FAKTY:
+
+(Peter je rodic Jano)
+(Peter je rodic Vlado)
+(manzelia Peter Eva)
+(Vlado je rodic Maria)
+(Vlado je rodic Viera)
+(muz Peter)
+(muz Jano)
+(muz Vlado)
+(zena Maria)
+(zena Viera)
+(zena Eva)
+
+PRAVIDLÁ:
+
+DruhyRodic1:
+AK ((?X je rodic ?Y)(manzelia ?X ?Z))
+POTOM ((pridaj ?Z je rodic ?Y))
+
+DruhyRodic2:
+AK ((?X je rodic ?Y)(manzelia ?Z ?X))
+POTOM ((pridaj ?Z je rodic ?Y))
+
+Otec:
+AK ((?X je rodic ?Y)(muz ?X))
+POTOM ((pridaj ?X je otec ?Y))
+
+Matka:
+AK ((?X je rodic ?Y)(zena ?X))
+POTOM ((pridaj ?X je matka ?Y))
+
+Surodenci:
+AK ((?X je rodic ?Y)(?X je rodic ?Z)(<> ?Y ?Z))
+POTOM ((pridaj ?Y a ?Z su surodenci))
+
+Brat:
+AK ((?Y a ?Z su surodenci)(muz ?Y))
+POTOM ((pridaj ?Y je brat ?Z))
+
+Stryko:
+AK ((?Y je brat ?Z)(?Z je rodic ?X))
+POTOM ((pridaj ?Y je stryko ?X)(sprava ?X ma stryka))
+
+Test mazania:
+AK ((?Y je stryko ?X)(zena ?X))
+POTOM ((vymaz zena ?X))
