@@ -1,75 +1,94 @@
 package mainPackage;
 
 import java.io.*;
-
-/* Try with resources
- * http://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
- */
+import java.util.*;
 
 public class MainFile {
 	public final static String FACTS_FILE_NAME = "fakty.txt";
 	public final static String RULES_FILE_NAME = "pravidla.txt";
+	public final static boolean DEBUG_INPUT = true;
+	public final static boolean DEBUG_OUTPUT = true;
 	
-	private static String facts = "";
-	private static String rules = "";
+	private static List<String> facts = new ArrayList<String>();
+	private static List<String> rules = new ArrayList<String>();
 	
 	public static void main(String[] args) {
 		
-		/* Na��tanie faktov */
+		/* Načítanie faktov */
 		try (BufferedReader factsReader = new BufferedReader(new FileReader(FACTS_FILE_NAME))) {
-			StringBuilder factsBuilder = new StringBuilder();
 			String line = null;
 			
 			while ((line = factsReader.readLine()) != null) {
-		        factsBuilder.append(line);
-		        factsBuilder.append(System.lineSeparator());
-		        line = factsReader.readLine();
+				facts.add(line);
 		    }
 			
-		    facts = factsBuilder.toString();
-			System.out.println("Fakty:\n" + facts);
+			if (DEBUG_INPUT) System.out.println("Vstupné fakty:\n" + facts);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
 				
-		/* Na��tanie pravidiel */
-		try (BufferedReader rulesReader = new BufferedReader(new FileReader(FACTS_FILE_NAME))) {
-			StringBuilder rulesBuilder = new StringBuilder();
+		/* Načítanie pravidiel */
+		try (BufferedReader rulesReader = new BufferedReader(new FileReader(RULES_FILE_NAME))) {
 			String line = null;
 			
 			while ((line = rulesReader.readLine()) != null) {
-				rulesBuilder.append(line);
-				rulesBuilder.append(System.lineSeparator());
-		        line = rulesReader.readLine();
+				if (line.startsWith("AK")) {
+					rules.add(line.substring(3));
+				}
+				else if (line.startsWith("POTOM")) {
+					rules.add(line.substring(6));
+				}
 		    }
 			
-			rules = rulesBuilder.toString();
-			System.out.println("Pravidl�:\n" + rules);
+			if (DEBUG_INPUT) System.out.println("Vstupné pravidlá:\n" + rules);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
 		
+		//LOGIKA PROGRAMU
+		compareRuleFact(facts.get(0), rules.get(0));
 		
+		/* Prepisanie stareho suboru s faktami - na predvedenie je ukladane do ineho suboru */
+		try (PrintWriter out = new PrintWriter(new FileOutputStream("fakty(vystup).txt", false))){
+			for (String str: facts) {
+				out.write(str + System.lineSeparator());
+			}
+		} catch (FileNotFoundException fnf) {
+			fnf.printStackTrace();
+		}
+		
+		if (DEBUG_OUTPUT) {
+			System.out.println("\nVýstupné fakty:");
+			facts.forEach(System.out::println);
+			System.out.println("\nVýstupné pravidlá:");
+			rules.forEach(System.out::println);
+		}
+	}
+	
+	private static String compareRuleFact(String rule, String fact) {
+		String ruleCopy = rule.replaceAll("[()]", "");
+		String factCopy = fact.replaceAll("[()]", "");
+		
+		System.out.println("RC:\n" + ruleCopy + "\nFC:\n" + factCopy);
+		
+		return null;
 	}
 	
 	private static void appendFact(String fact) {
-		if (!facts.contains(fact)) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(facts + System.lineSeparator() + fact);
-			facts = sb.toString();
-		}
+			facts.add(fact);
 	}
 	
 	private static boolean deleteFact(String fact) {
 		if (facts.contains(fact)) {
-			facts.replace(fact, "");
+			for (int i = 0; i < facts.size(); i++)
+				if (facts.get(i) == fact) facts.remove(i);
 			return true;
 		}
-		else return false;
+		return false;
 	}
 	
 	private static void message(String fact) {
