@@ -11,7 +11,7 @@ public class MainFile {
 	
 	private static List<String> facts = new ArrayList<String>();
 	private static List<String> rules = new ArrayList<String>();
-	private static List<String> actions = new ArrayList<String>();
+	//private static List<String> actions = new ArrayList<String>();
 	
 	public static void main(String[] args) {
 		
@@ -34,19 +34,21 @@ public class MainFile {
 		try (BufferedReader rulesReader = new BufferedReader(new FileReader(RULES_FILE_NAME))) {
 			String line = null;
 			String temp = null;
-			//String[] tempArray;
+			String[] tempArray;
+			boolean correctRule = false;
 			
 			while ((line = rulesReader.readLine()) != null) {
 				if (line.startsWith("AK")) {
 					temp = line.substring(3);
 					temp = temp.substring(1, temp.length() - 1);
 					
-					/*tempArray = temp.split("[)]");
+					tempArray = temp.split("[)]");
 					
 					for (int i = 0; i < tempArray.length; i++) {
 						tempArray[i] = tempArray[i].substring(1);
-						//System.out.println(tempArray[i]);
-					}*/
+						/* Kontrola splnenia podmienky */
+						correctRule = isRuleCorrect(tempArray[i]);
+					}
 					
 					if (DEBUG_INPUT) System.out.println("Podmienka: " + temp);
 					rules.add(temp);
@@ -54,6 +56,9 @@ public class MainFile {
 				else if (line.startsWith("POTOM")) {
 					temp = line.substring(6);
 					temp = temp.substring(1, temp.length() - 1);
+					
+					/* Vytvorenie noveho faktu ak je splnena podmienka */
+					if (correctRule) createFact(temp, getVariables(rules.get(rules.size())));
 					
 					if (DEBUG_INPUT) System.out.println("Akcia: " + temp);
 					rules.add(temp);
@@ -66,9 +71,6 @@ public class MainFile {
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
-		
-		//LOGIKA PROGRAMU
-		resolveRulesFacts();
 		
 		/* Prepísanie starého súboru s faktami */
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(FACTS_FILE_NAME, false))) {
@@ -87,9 +89,9 @@ public class MainFile {
 		}
 	}
 	
-	private static String resolveRulesFacts() {
+	/*private static String resolveRulesFacts() {
 		/*String[] ruleCopy = rule.replaceAll("[()]", "").split(" ");
-		String[] factCopy = fact.replaceAll("[()]", "").split(" ");*/
+		String[] factCopy = fact.replaceAll("[()]", "").split(" ");
 		String[] tempArray = null;
 		
 		for (int i = 0; i < rules.size(); i++) {
@@ -102,42 +104,108 @@ public class MainFile {
 		}
 		
 		return null;
+	}*/
+	
+	/* Vrati arraylist premennych v pravidle */
+	private static List<String> getVariables(String rule) {
+		String[] arrayRule = rule.replaceAll("[()]", " ").split(" ");
+		List<String> result = new ArrayList<String>();
+		
+		for (int i = 0; i < arrayRule.length; i++) {
+			if (arrayRule[i].contains("?")) {
+				result.add(arrayRule[i]);
+			}
+		}
+		return result;
 	}
 	
-	private static String findCondition(String condition) {
-		String[] arrayCondition = condition.split(" ");
-		String[] arrayFact = null;
-		int conditionLength = arrayCondition[0].length();
-		int factLength = 0;
+	/* Porovna podmienku condition s faktom fact a vrati arraylist vo formate ?PREMENNA = HODNOTA */
+	private static List<String> findCondition(String condition, String fact) {
+		String[] arrayCondition = condition.replaceAll("[()]", "").split(" ");
+		String[] arrayFact = fact.replaceAll("[()]", "").split(" ");
+		List<String> result = new ArrayList<String>();
+		
+		
+		if (arrayCondition.length != arrayFact.length)
+			return null;
+			
+		for (int i = 0; i < arrayCondition.length; i++) {
+			if (arrayCondition[i] != arrayFact[i]) {
+				if (arrayCondition[i].contains("?")) {
+					result.add(arrayFact[i] + " = " + arrayCondition[i]);
+				}
+				else return null;
+			}
+		}
+		return result;
+	}
+	
+	/* Zisti ci je pravidlo spravne */
+	private static boolean isRuleCorrect(String rule) {
+		List<String> temp = null;
 		
 		for (int i = 0; i < facts.size(); i++) {
-			arrayFact = facts.get(i).split(" ");
-			factLength = arrayFact.length;
-			
-			if (conditionLength != factLength) {
-				continue;
+			temp = findCondition(rule, facts.get(i));
+			if (temp != null) {
+				return true;
 			}
-			
-			
 		}
-		
-		return null;
+		return false;
 	}
 	
+	/* Z akcie vytvori fakt */
+	private static void createFact(String action, List<String> var) {
+		String[] actionCopy = action.replaceAll("[()]", "").split(" ");
+		
+		for (int i = 0; i < actionCopy.length; i++) {
+			if (actionCopy[i].contains("pridaj"))
+				addFact("(" + replaceVariables(action.replace("pridaj ", ""), var) + ")");
+			
+			if (actionCopy[i].contains("vymaz"))
+				deleteFact("(" + replaceVariables(action.replace("vymaz ", ""), var) + ")");
+			
+			if (actionCopy[i].contains("sprava"))
+				message("(" + replaceVariables(action.replace("sprava ", ""), var) + ")");
+		}
+	}
+	
+	/* V akcii vymeni premenne za prislusne hodnoty */
+	private static String replaceVariables(String action, List<String> var) {
+		String result = action;
+		
+		for (int i = 0; i < var.size(); i++) {
+			String[] help = var.get(i).split(" ");
+			String temp = help[0];
+			String temp2 = help[2];
+			
+			for (int j = 3; j < help.length; j++) {
+				temp2 += " " + help[j];
+			}
+			
+			if (result.contains(temp))
+				result = result.replace(temp, temp2);
+		}
+		return result;
+	}
+	
+	/* Pridanie faktu */
 	private static void addFact(String fact) {
 		if (!facts.contains(fact))
 			facts.add(fact);
 	}
 	
+	/* Odstranenie faktu */
 	private static boolean deleteFact(String fact) {
-		if (facts.contains(fact)) {
+		if (facts.contains(fact))
 			for (int i = 0; i < facts.size(); i++)
-				if (facts.get(i) == fact) facts.remove(i);
-			return true;
-		}
+				if (facts.get(i) == fact) {
+					facts.remove(i);
+					return true;
+				}
 		return false;
 	}
 	
+	/* Sprava */
 	private static void message(String fact) {
 		System.out.println(fact);
 	}
