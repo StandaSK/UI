@@ -6,11 +6,12 @@ import java.util.*;
 public class MainFile {
 	public final static String FACTS_FILE_NAME = "fakty.txt";
 	public final static String RULES_FILE_NAME = "pravidla.txt";
-	public final static boolean DEBUG_INPUT = true;
-	public final static boolean DEBUG_OUTPUT = true;
+	public final static boolean DEBUG_INPUT = false;
+	public final static boolean DEBUG_OUTPUT = false;
 	
 	private static List<String> facts = new ArrayList<String>();
 	private static List<String> rules = new ArrayList<String>();
+	private static List<String> actions = new ArrayList<String>();
 	
 	public static void main(String[] args) {
 		
@@ -32,13 +33,30 @@ public class MainFile {
 		/* Načítanie pravidiel */
 		try (BufferedReader rulesReader = new BufferedReader(new FileReader(RULES_FILE_NAME))) {
 			String line = null;
+			String temp = null;
+			//String[] tempArray;
 			
 			while ((line = rulesReader.readLine()) != null) {
 				if (line.startsWith("AK")) {
-					rules.add(line.substring(3));
+					temp = line.substring(3);
+					temp = temp.substring(1, temp.length() - 1);
+					
+					/*tempArray = temp.split("[)]");
+					
+					for (int i = 0; i < tempArray.length; i++) {
+						tempArray[i] = tempArray[i].substring(1);
+						//System.out.println(tempArray[i]);
+					}*/
+					
+					if (DEBUG_INPUT) System.out.println("Podmienka: " + temp);
+					rules.add(temp);
 				}
 				else if (line.startsWith("POTOM")) {
-					rules.add(line.substring(6));
+					temp = line.substring(6);
+					temp = temp.substring(1, temp.length() - 1);
+					
+					if (DEBUG_INPUT) System.out.println("Akcia: " + temp);
+					rules.add(temp);
 				}
 		    }
 			
@@ -50,7 +68,7 @@ public class MainFile {
 		}
 		
 		//LOGIKA PROGRAMU
-		compareRuleFact(facts.get(0), rules.get(0));
+		resolveRulesFacts();
 		
 		/* Prepísanie starého súboru s faktami */
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(FACTS_FILE_NAME, false))) {
@@ -69,18 +87,45 @@ public class MainFile {
 		}
 	}
 	
-	private static String compareRuleFact(String rule, String fact) {
-		String[] ruleCopy = rule.replaceAll("[()]", "").split(" ");
-		String[] factCopy = fact.replaceAll("[()]", "").split(" ");
+	private static String resolveRulesFacts() {
+		/*String[] ruleCopy = rule.replaceAll("[()]", "").split(" ");
+		String[] factCopy = fact.replaceAll("[()]", "").split(" ");*/
+		String[] tempArray = null;
 		
-		for (String str : factCopy) {
+		for (int i = 0; i < rules.size(); i++) {
+			tempArray = rules.get(i).split("[)]");
+			for (int j = 0; j < tempArray.length; j++) {
+				tempArray[j] += ")";
+				System.out.println(tempArray[j]);
+			}
+			System.out.println();
+		}
+		
+		return null;
+	}
+	
+	private static String findCondition(String condition) {
+		String[] arrayCondition = condition.split(" ");
+		String[] arrayFact = null;
+		int conditionLength = arrayCondition[0].length();
+		int factLength = 0;
+		
+		for (int i = 0; i < facts.size(); i++) {
+			arrayFact = facts.get(i).split(" ");
+			factLength = arrayFact.length;
+			
+			if (conditionLength != factLength) {
+				continue;
+			}
+			
 			
 		}
 		
 		return null;
 	}
 	
-	private static void appendFact(String fact) {
+	private static void addFact(String fact) {
+		if (!facts.contains(fact))
 			facts.add(fact);
 	}
 	
