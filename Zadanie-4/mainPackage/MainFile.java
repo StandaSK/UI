@@ -3,14 +3,17 @@ package mainPackage;
 import java.io.*;
 import java.util.*;
 
+import customType.*;
+
 public class MainFile {
 	public final static String FACTS_FILE_NAME = "fakty.txt";
 	public final static String RULES_FILE_NAME = "pravidla.txt";
 	public final static boolean DEBUG_INPUT = false;
-	public final static boolean DEBUG_OUTPUT = false;
+	//public final static boolean DEBUG_OUTPUT = false;
 	
 	private static List<String> facts = new ArrayList<String>();
-	private static List<String> rules = new ArrayList<String>();
+	private static List<Rule> rules = new ArrayList<Rule>();
+	private static List<String[]> aplicableRules = new ArrayList<String[]>();
 	
 	public static void main(String[] args) {
 		
@@ -28,52 +31,86 @@ public class MainFile {
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
-				
+		
 		/* Načítanie pravidiel */
 		try (BufferedReader rulesReader = new BufferedReader(new FileReader(RULES_FILE_NAME))) {
 			String line = null;
-			String temp = null;
-			String[] tempArray;
-			boolean correctRule = true;
+			String[] tempArray = null;
 			
 			while ((line = rulesReader.readLine()) != null) {
-				if (line.startsWith("AK")) {
-					temp = line.substring(3);
-					temp = temp.substring(1, temp.length() - 1);
-					
-					tempArray = temp.split("[)]");
-					
-					for (int i = 0; i < tempArray.length; i++) {
-						tempArray[i] = tempArray[i].substring(1);
-						/* Kontrola splnenia podmienky */
-						correctRule &= isRuleCorrect(tempArray[i]);
-					}
-					
-					if (DEBUG_INPUT) System.out.println("Podmienka: " + temp);
-					rules.add(temp);
-				}
-				else if (line.startsWith("POTOM")) {
-					temp = line.substring(6);
-					temp = temp.substring(1, temp.length() - 1);
-					
-					/* Vytvorenie noveho faktu ak je splnena podmienka */
-					if (correctRule) {
-						//System.out.println("CORRECT RULE: " + temp + getVariables(rules.get(rules.size() - 1)));
-						createFact(temp, getVariables(rules.get(rules.size() - 1)));
-					}
-					
-					if (DEBUG_INPUT) System.out.println("Akcia: " + temp);
-					rules.add(temp);
-				}
-				correctRule = true;
-		    }
-			
-			if (DEBUG_INPUT) System.out.println("\nVstupné pravidlá:\n" + rules);
+				Rule rule = new Rule();
+				
+				/* Nacitanie nazvu pravidla */
+				rule.setName(line);
+				if (DEBUG_INPUT) System.out.println("Pravidlo: " + line);
+				
+				/* Nacitanie podmienok pravidla */
+				line = rulesReader.readLine();
+				line = line.replace("AK ", "");
+				tempArray = line.replace("((" , "").replace("))" , "").split("\\)\\(");
+				rule.setConditions(tempArray);
+				if (DEBUG_INPUT) System.out.println("Podmienky: " + line);
+				
+				/* Nacitanie akcii pravidla */
+				line = rulesReader.readLine();
+				line = line.replace("POTOM ", "");
+				tempArray = line.replace("((" , "").replace("))" , "").split("\\)\\(");
+				rule.setActions(tempArray);
+				if (DEBUG_INPUT) System.out.println("Akcie: " + line);
+				
+				/* Prejdenie prazdneho riadku medzi pravidlami */
+				line = rulesReader.readLine();
+				if (DEBUG_INPUT) System.out.println();
+				
+				rules.add(rule);
+			}
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
+		
+		while (true) {
+			// Hladanie aplikovatelnych instancii pravidiel - akcii 
+			for (Rule r : rules) {
+				recursion(new HashMap<String, String>(), r, 0);
+			}
+			
+			/*System.out.println("Neodfiltrovane pravidla: ");
+			for (String[] s : aplicableRules) {
+				System.out.println(Arrays.deepToString(s));
+			}*/
+			
+			// Filtrovanie aplikovatelnych instancii pravidiel 
+			filterAplicableRules();
+			/*System.out.println("Odfiltrovane pravidla: ");
+			for (String[] s : aplicableRules) {
+				System.out.println(Arrays.deepToString(s));
+			}*/
+			
+			/* Vyber prvej aplikovatelnej instancie a jej vykonanie*/
+			if (!aplicableRules.isEmpty()) {
+				createFact(aplicableRules.get(0));
+				aplicableRules.remove(0);
+			}
+			/* Ak uz ziadne aplikovatelne instancie neexistuju */
+			else break;
+		}
+		
+		/*// Hladanie aplikovatelnych instancii pravidiel - akcii 
+		for (Rule r : rules) {
+			recursion(new HashMap<String, String>(), r, 0);
+		}
+		
+		for (String[] s : aplicableRules) {
+			System.out.println(Arrays.deepToString(s));
+		}
+		
+		// Filtrovanie aplikovatelnych instancii pravidiel 
+		filterAplicableRules();
+		
+		if (!aplicableRules.isEmpty()) { createFact(aplicableRules.get(0)); }
+		//else break;*/
 		
 		/* Prepísanie starého súboru s faktami */
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(FACTS_FILE_NAME, false))) {
@@ -83,112 +120,217 @@ public class MainFile {
 		} catch (FileNotFoundException fnf) {
 			fnf.printStackTrace();
 		}
-		
-		if (DEBUG_OUTPUT) {
-			System.out.println("\nVýstupné fakty:");
-			facts.forEach(System.out::println);
-			System.out.println("\nVýstupné pravidlá:");
-			rules.forEach(System.out::println);
+	}
+	
+	/* Filtrovanie aplikovatelnych instancii pravidiel */
+	private static void filterAplicableRules() {
+		int size = aplicableRules.size();
+		for (int i = 0; i < size; i++) {
+			while ((!aplicableRules.isEmpty()) && (i < aplicableRules.size()) && (!doesChangeAnything(aplicableRules.get(i)))) {
+				//System.out.println("CHECK: " + i + " SIZE: " + aplicableRules.size());
+				aplicableRules.remove(i);
+			}
+			size = aplicableRules.size();
 		}
 	}
 	
-	/* Vrati arraylist premennych v pravidle */
-	private static List<String> getVariables(String rule) {
-		String[] arrayRule = rule.replaceAll("[()]", " ").split(" ");
-		List<String> result = new ArrayList<String>();
+	/* Zisti ci akcie actions nieco menia vo faktoch */
+	private static boolean doesChangeAnything(String[] actions) {
+		/*//Ak je jedina akcia sprava tak hned vrati false
+		if ((actions.length == 1) && (actions[0].startsWith("sprava"))) {
+			return false;
+		}*/
 		
-		for (int i = 0; i < arrayRule.length; i++) {
-			if (arrayRule[i].contains("?")) {
-				result.add(arrayRule[i]);
-			}
-		}
-		return result;
-	}
-	
-	/* Porovna podmienku condition s faktom fact a vrati arraylist vo formate ?PREMENNA = HODNOTA */
-	private static List<String> findCondition(String condition, String fact) {
-		String[] arrayCondition = condition.replaceAll("[()]", "").split(" ");
-		String[] arrayFact = fact.replaceAll("[()]", "").split(" ");
-		List<String> result = new ArrayList<String>();
+		boolean temp = false;
 		
-		
-		if (arrayCondition.length != arrayFact.length) {
-			//System.out.println("Nesedi dlzka!");
-			return null;
-		}
-		
-		for (int i = 0; i < arrayCondition.length; i++) {
-			if (arrayCondition[i].equals(arrayFact[i])) {
-				if (arrayCondition[i].contains("?")) {
-					result.add(arrayFact[i] + " = " + arrayCondition[i]);
-				}
-				else {
-					//System.out.println("Nesedia premenne!");
-					return null;
-				}
-			}
-		}
-		return result;
-	}
-	
-	/* Zisti ci je pravidlo spravne */
-	private static boolean isRuleCorrect(String rule) {
-		List<String> temp = null;
-				
-		for (int i = 0; i < facts.size(); i++) {
-			temp = findCondition(rule, facts.get(i));
-			if (temp != null) {
-				return true;
-			}
+		for (String f : actions) {
+			if (f.contains("pridaj")) { temp = !facts.contains(f.replace("pridaj ", "")); }
+			
+			if (f.contains("vymaz")) { temp = facts.contains(f.replace("vymaz ", "")); }
+			
+			if (temp) { return true; }
 		}
 		return false;
 	}
 	
-	/* Z akcie vytvori fakt */
-	private static void createFact(String action, List<String> var) {
-		String[] actionCopy = action.replaceAll("[()]", "").split(" ");
-		//System.out.println("action: " + action);
+	private static void recursion(Map<String, String> localMap, Rule rule, int num) {
+		String currentCondition = rule.getConditions()[num];
 		
-		for (int i = 0; i < actionCopy.length; i++) {
-			if (actionCopy[i].contains("pridaj"))
-				//System.out.println("PRIDAJ: " + replaceVariables(action.replace("pridaj ", ""), var));
-				addFact(replaceVariables(action.replace("pridaj ", ""), var));
+		/* Ak uz je na poslednej urovni rekurzie */
+		if (num == rule.getConditions().length - 1) {
+			if (currentCondition.contains("<>")) {
+				String[] tempArray = currentCondition.split(" ");
+				if (isDifferent(tempArray[1], tempArray[2], localMap)) {
+					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
+				}
+				return;
+			}
 			
-			if (actionCopy[i].contains("vymaz"))
-				//System.out.println("VYMAZ: " + replaceVariables(action.replace("pridaj ", ""), var));
-				deleteFact(replaceVariables(action.replace("vymaz ", ""), var));
-			
-			if (actionCopy[i].contains("sprava"))
-				//System.out.println("SPRAVA: " + replaceVariables(action.replace("pridaj ", ""), var));
-				message(replaceVariables(action.replace("sprava ", ""), var));
+			for (String f : facts) {
+				if (isConditionCorrect(replaceVariables(currentCondition, localMap), f)) {
+					List<String> var = findHashValue(currentCondition, f);
+					List<String> keep = new ArrayList<String>();
+					//System.out.println("Pred pridanimK: " + localMap);
+					/* Pridanie premennych do hash mapy */
+					for (String s : var) {
+						String[] temp = s.split(" = ");
+						String tempKeep = localMap.put(temp[0], temp[1]);
+						if (tempKeep != null) {
+							keep.add(temp[0]);
+						}
+					}
+					//System.out.println("PridaneK: " + localMap);
+					/* Pridanie aplikovatelnych instancii */
+					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
+					/* Odstranenie premennych z hash mapy */
+					for (String s : var) {
+						String[] temp = s.split(" = ");
+						if (!keep.contains(temp[0])) localMap.remove(temp[0]);
+					}
+					//System.out.println("OdobraneK: " + localMap);
+				}
+			}
+		}
+		/* Ak este nie je na poslednej urovni rekurzie */
+		else {
+			if (currentCondition.contains("<>")) {
+				String[] tempArray = currentCondition.split(" ");
+				if (isDifferent(tempArray[1], tempArray[2], localMap)) {
+					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
+				}
+			}
+			else {
+				for (String f : facts) {
+					if (isConditionCorrect(replaceVariables(currentCondition, localMap), f)) {
+						List<String> var = findHashValue(currentCondition, f);
+						List<String> keep = new ArrayList<String>();
+						//System.out.println("Pred pridanim: " + localMap);
+						/* Pridanie premennych do hash mapy */
+						for (String s : var) {
+							String[] temp = s.split(" = ");
+							String tempKeep = localMap.put(temp[0], temp[1]);
+							if (tempKeep != null) {
+								keep.add(temp[0]);
+							}
+						}
+						//System.out.println("Pridane: " + localMap);
+						recursion(localMap, rule, num + 1);
+						/* Odstranenie premennych z hash mapy */
+						for (String s : var) {
+							String[] temp = s.split(" = ");
+							if (!keep.contains(temp[0])) localMap.remove(temp[0]);
+						}
+						//System.out.println("Odobrane: " + localMap);
+					}
+				}
+			}
 		}
 	}
 	
-	/* V akcii vymeni premenne za prislusne hodnoty */
-	private static String replaceVariables(String action, List<String> var) {
-		String result = action;
+	/* Porovna podmienku condition s faktom fact a vrati arraylist vo formate ?PREMENNA = HODNOTA */
+	private static List<String> findHashValue(String condition, String fact) {
+		String[] arrayCondition = condition.replaceAll("[()]", "").split(" ");
+		String[] arrayFact = fact.replaceAll("[()]", "").split(" ");
+		List<String> result = new ArrayList<String>();
 		
-		for (int i = 0; i < var.size(); i++) {
-			String[] help = var.toString().replaceAll("]", "").replace("[", "").replace(",", "").split(" ");
-			
-			for (int j = 0; j < help.length; j++) {
-				
+		if (arrayCondition.length != arrayFact.length) { return null; }
+		
+		for (int i = 0; i < arrayCondition.length; i++) {
+			if (!arrayCondition[i].equals(arrayFact[i])) {
+				if (arrayCondition[i].contains("?")) {
+					result.add(arrayCondition[i] + " = " + arrayFact[i]);
+				}
+				else { return null; }
 			}
 		}
 		return result;
 	}
 	
+	/* V akcii vymeni premenne za ich prislusne hodnoty */
+	private static String replaceVariables(String action, Map<String, String> localMap) {
+		String[] tempArray = action.replaceAll("[()]", "").split(" ");
+		String temp = action;
+		
+		for (String s : tempArray)
+			if (s.contains("?") && (localMap.containsKey(s))) { temp = temp.replace(s, localMap.get(s)); }
+		
+		return temp;
+	}
+	
+	/* V akciach vymeni premenne za ich prislusne hodnoty */
+	private static String[] replaceVariables(String[] actions, Map<String, String> localMap) {
+		String[] temp = actions.clone();
+		
+		 /*
+		 System.out.println("REPLACE: " + Arrays.deepToString(temp) +
+		 " X: " + localMap.get("?X") +
+		 " Y: " + localMap.get("?Y") +
+		 " Z: " + localMap.get("?Z"));
+		 */
+		
+		for (int i = 0; i < temp.length; i++) {
+			String a = temp[i];
+			String[] tempArray = a.replaceAll("[()]", "").split(" ");
+			for (String s : tempArray)
+				if (s.contains("?") && (localMap.containsKey(s))) {
+					//System.out.println(temp[i]);
+					temp[i] = temp[i].replace(s, localMap.get(s));
+					//System.out.println(temp[i]);
+				}
+		}
+		
+		return temp;
+	}
+	
+	/* Z akcie vytvori fakt */
+	private static void createFact(String action) {
+		if (action.contains("pridaj")) { addFact(action.replace("pridaj ", "")); }
+		
+		if (action.contains("vymaz")) { deleteFact(action.replace("vymaz ", "")); }
+		
+		if (action.contains("sprava")) { message(action.replace("sprava ", "")); }
+	}
+	
+	/* Z pola akcii vytvori fakty */
+	private static void createFact(String[] actions) {
+		for (String s : actions) {
+			createFact(s);
+		}
+	}
+	
+	/* Zisti ci je podmienka platna a ak ano tak vlozi do hashmapy hodnoty k premennym */
+	private static boolean isConditionCorrect(String condition, String fact) {
+		/* Ak uz su premenne doplnene a podmienka sa zhoduje s faktom */
+		if (condition.equals(fact)) { return true; }
+		
+		List<String> var = findHashValue(condition, fact);
+		
+		if (var != null) { return true; }
+		
+		return false;
+	}
+	
+	/* Porovna ci su mena A a B odlisne - funkcia <> */
+	private static boolean isDifferent(String A, String B, Map<String, String> localMap) {
+		if (localMap.get(A).equals(localMap.get(B))) { return false; }
+		return true;
+	}
+	
 	/* Pridanie faktu */
-	private static void addFact(String fact) {
-		if (!facts.contains(fact))
+	private static boolean addFact(String fact) {
+		if (!facts.contains(fact)) {
+			//facts.add("(" + fact + ")");
 			facts.add(fact);
+			return true;
+		}
+		return false;
 	}
 	
 	/* Odstranenie faktu */
 	private static boolean deleteFact(String fact) {
 		if (facts.contains(fact))
 			for (int i = 0; i < facts.size(); i++)
-				if (facts.get(i) == fact) {
+				if (facts.get(i).equals(fact)) {
 					facts.remove(i);
 					return true;
 				}
