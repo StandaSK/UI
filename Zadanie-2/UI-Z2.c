@@ -289,7 +289,7 @@ UZOL* IDS(UZOL *uzol, int maxHlbka, int pocetVozidiel, int cervena) {
 				
 				//vyberie vsetky tahy
 				for (j = 0; j < 6 - tah->dlzka + 1; j++) {
-					if (j != uzol->pozicie[i]->x){
+					if (j != tah->oldx){
 						tah->newx = j;
 						//vyberie len platne tahy
 						if (checkMove(uzol->krizovatka, tah)) {
@@ -329,7 +329,7 @@ UZOL* IDS(UZOL *uzol, int maxHlbka, int pocetVozidiel, int cervena) {
 				
 				//vyberie vsetky tahy
 				for (j = 0; j < 6 - tah->dlzka + 1; j++) {
-					if (j != uzol->pozicie[i]->y){
+					if (j != tah->oldy){
 						tah->newy = j;
 						//vyberie len platne tahy
 						if (checkMove(uzol->krizovatka, tah)) {
