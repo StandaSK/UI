@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 typedef struct pozicia {
 	int farba;
@@ -189,9 +189,9 @@ int checkMove(int **arr, TAH *tah) {
 			for (i = tah->newy; i < tah->oldy; i++) {
 				if (DEBUG) {
 					printf("i: %d\n", i);
-					printf("arr[tah->oldx][i] %d\n", arr[tah->oldx][i]);
+					printf("arr[i][tah->oldx] %d\n", arr[i][tah->oldx]);
 				}
-				if (!((arr[tah->oldx][i] == 0) || (arr[tah->oldx][i] == tah->farba))) {
+				if (!((arr[i][tah->oldx] == 0) || (arr[i][tah->oldx] == tah->farba))) {
 					//ak nie je pravda ze prvok == 0 alebo ID farby
 					if (DEBUG) printf("NEPLATI ");
 					return 0;
@@ -435,8 +435,8 @@ int main() {
 				c = token[0];
 				pozicie[j]->farba = pom[0];
 				pozicie[j]->dlzka = pom[1];
-				pozicie[j]->x = pom[3] - 1;
-				pozicie[j]->y = pom[2] - 1;
+				pozicie[j]->x = pom[2] - 1;
+				pozicie[j]->y = pom[3] - 1;
 				pozicie[j]->smer = c;
 				uzol->pozicie = pozicie;
 					
@@ -446,16 +446,16 @@ int main() {
 					printf("Vozidlo farby %s, dlzky %d je na pozicii %d X %d horizontalne.\n",
 					farby[pom[0] - 1], pom[1], pom[2], pom[3]);
 					
-					for (i = pom[3] - 1; i < pom[3] + pom[1] - 1; i++) {
-						uzol->krizovatka[pom[2] - 1][i] = pom[0];
+					for (i = (pom[2] - 1); i < (pom[2] + pom[1] - 1); i++) {
+						uzol->krizovatka[pom[3] - 1][i] = pom[0];
 					}
 				}
 				else if (c == 'v') {
 					printf("Vozidlo farby %s, dlzky %d je na pozicii %d X %d vertikalne.\n",
 					farby[pom[0] - 1], pom[1], pom[2], pom[3]);
 					
-					for (i = pom[2] - 1; i < pom[2] + pom[1] - 1; i++) {
-						uzol->krizovatka[i][pom[3] - 1] = pom[0];
+					for (i = pom[3] - 1; i < pom[3] + pom[1] - 1; i++) {
+						uzol->krizovatka[i][pom[2] - 1] = pom[0];
 					}
 				}
 			}
