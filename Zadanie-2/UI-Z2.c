@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 typedef struct pozicia {
 	int farba;
@@ -102,7 +102,7 @@ int checkMove(int **arr, TAH *tah) {
 		if (tah->newx > tah->oldx) {
 			//kladny posun
 			if (DEBUG) {
-				printf("tah->smer %c\n", tah->smer);
+				printf("tah->smer: %c\n", tah->smer);
 				printf("tah->oldy: %d\n", tah->oldy);
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->oldx: %d\n", tah->oldx);
@@ -126,7 +126,7 @@ int checkMove(int **arr, TAH *tah) {
 		else {
 			//zaporny posun
 			if (DEBUG) {
-				printf("tah->smer %c\n", tah->smer);
+				printf("tah->smer: %c\n", tah->smer);
 				printf("tah->oldy: %d\n", tah->oldy);
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->oldx: %d\n", tah->oldx);
@@ -153,7 +153,7 @@ int checkMove(int **arr, TAH *tah) {
 		if (tah->newy > tah->oldy) {
 			//kladny posun
 			if (DEBUG) {
-				printf("tah->smer %c\n", tah->smer);
+				printf("tah->smer: %c\n", tah->smer);
 				printf("tah->oldy: %d\n", tah->oldy);
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->oldx: %d\n", tah->oldx);
@@ -177,7 +177,7 @@ int checkMove(int **arr, TAH *tah) {
 		else {
 			//zaporny posun
 			if (DEBUG) {
-				printf("tah->smer %c\n", tah->smer);
+				printf("tah->smer: %c\n", tah->smer);
 				printf("tah->oldy: %d\n", tah->oldy);
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->oldx: %d\n", tah->oldx);
@@ -493,7 +493,39 @@ int main() {
 			putchar('\n');
 			
 			while (akt != NULL) {
-				printf("%s %d %d\n", farby[akt->tah->farba], akt->tah->newx - akt->tah->oldx, akt->tah->newy - akt->tah->oldy);
+				if (DEBUG) {
+					printf("akt->tah->smer: %c\n", akt->tah->smer);
+					printf("akt->tah->farba: %d\n", akt->tah->farba);
+					printf("akt->tah->oldy: %d\n", akt->tah->oldy);
+					printf("akt->tah->newy: %d\n", akt->tah->newy);
+					printf("akt->tah->oldx: %d\n", akt->tah->oldx);
+					printf("akt->tah->newx: %d\n", akt->tah->newx);
+					printf("akt->tah->dlzka: %d\n", akt->tah->dlzka);
+				}
+				
+				printf("(%s [%d] ", farby[akt->tah->farba - 1], akt->tah->farba);
+				//printf("(%s %d %d\n", farby[akt->tah->farba - 1], akt->tah->newx - akt->tah->oldx, akt->tah->newy - akt->tah->oldy);
+				if (akt->tah->smer == 'h') {
+					if (akt->tah->newx - akt->tah->oldx > 0) {
+						printf("doprava %d)", akt->tah->newx - akt->tah->oldx);
+					}
+					else {
+						printf("dolava %d)", akt->tah->oldx - akt->tah->newx);
+					}
+				}
+				else {
+					if (akt->tah->newy - akt->tah->oldy > 0) {
+						printf("dole %d)", akt->tah->newy - akt->tah->oldy);
+					}
+					else {
+						printf("hore %d)", akt->tah->oldy - akt->tah->newy);
+					}
+				}
+				
+				if (akt->pred == NULL) {
+					break;
+				}
+				
 				akt = akt->pred;
 			}
 			
