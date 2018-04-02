@@ -64,6 +64,21 @@ void vypis(krizovatka k) {
 	}
 }
 
+// Vypis sucasneho stavu krizovatky s osami
+void debugVypis(krizovatka k) {
+	unsigned char i, j;
+
+
+	printf("  X 0 1 2 3 4 5\n");
+	printf("Y -------------\n");
+	for (j = 0; j < ySize; j++) {
+		printf("%d | ", j);
+		for (i = 0; i < xSize; i++)
+			printf("%d ", (unsigned int)k.mapa[i][j]);
+		printf("\n");
+	}
+}
+
 // Zistenie zhodnosti krizovatiek
 bool areEqual(krizovatka k1, krizovatka k2) {
 	unsigned char i, j;
@@ -117,16 +132,46 @@ bool overTah(krizovatka input, tah *tah) {
 	if (tah->smer == 'h') {
 		// Kladny posun
 		if (tah->newx > tah->oldx) {
+			if (debug) {
+				printf("tah->farba: %d\n", tah->farba);
+				printf("tah->smer: %c\n", tah->smer);
+				printf("tah->oldx: %d\n", tah->oldx);
+				printf("tah->newx: %d\n", tah->newx);
+				printf("tah->oldy: %d\n", tah->oldy);
+				printf("tah->newy: %d\n", tah->newy);
+				printf("tah->dlzka: %d\n", tah->dlzka);
+				printf("krizovatka:\n");
+				debugVypis(input);
+			}
 			for (i = tah->oldx; i < (tah->newx + tah->dlzka); i++) {
 				if ((input.mapa[i][tah->newy] != 0) && (input.mapa[i][tah->newy] != tah->farba)) {
+					if (debug) {
+						printf("Neplatny tah\n");
+						getchar();
+					}
 					return false;
 				}
 			}
 		}
 		// Zaporny posun
 		else {
+			if (debug) {
+				printf("tah->farba: %d\n", tah->farba);
+				printf("tah->smer: %c\n", tah->smer);
+				printf("tah->oldx: %d\n", tah->oldx);
+				printf("tah->newx: %d\n", tah->newx);
+				printf("tah->oldy: %d\n", tah->oldy);
+				printf("tah->newy: %d\n", tah->newy);
+				printf("tah->dlzka: %d\n", tah->dlzka);
+				printf("krizovatka:\n");
+				debugVypis(input);
+			}
 			for (i = tah->newx; i < tah->oldx; i++) {
 				if (input.mapa[i][tah->newy] != 0) {
+					if (debug) {
+						printf("Neplatny tah\n");
+						getchar();
+					}
 					return false;
 				}
 			}
@@ -136,52 +181,85 @@ bool overTah(krizovatka input, tah *tah) {
 	else {
 		// Kladny posun
 		if (tah->newy > tah->oldy) {
+			if (debug) {
+				printf("tah->farba: %d\n", tah->farba);
+				printf("tah->smer: %c\n", tah->smer);
+				printf("tah->oldx: %d\n", tah->oldx);
+				printf("tah->newx: %d\n", tah->newx);
+				printf("tah->oldy: %d\n", tah->oldy);
+				printf("tah->newy: %d\n", tah->newy);
+				printf("tah->dlzka: %d\n", tah->dlzka);
+				printf("krizovatka:\n");
+				debugVypis(input);
+			}
 			for (j = tah->oldy; j < (tah->newy + tah->dlzka); j++) {
 				if ((input.mapa[tah->newx][j] != 0) && (input.mapa[tah->newx][j] != tah->farba)) {
+					if (debug) {
+						printf("Neplatny tah\n");
+						getchar();
+					}
 					return false;
 				}
 			}
 		}
 		// Zaporny posun
 		else {
+			if (debug) {
+				printf("tah->farba: %d\n", tah->farba);
+				printf("tah->smer: %c\n", tah->smer);
+				printf("tah->oldx: %d\n", tah->oldx);
+				printf("tah->newx: %d\n", tah->newx);
+				printf("tah->oldy: %d\n", tah->oldy);
+				printf("tah->newy: %d\n", tah->newy);
+				printf("tah->dlzka: %d\n", tah->dlzka);
+				printf("krizovatka:\n");
+				debugVypis(input);
+			}
 			for (j = tah->newy; j < tah->oldy; j++) {
 				if (input.mapa[tah->newx][j] != 0) {
+					if (debug) {
+						printf("Neplatny tah\n");
+						getchar();
+					}
 					return false;
 				}
 			}
 		}
 	}
 
+	if (debug) {
+		printf("Platny tah\n");
+		getchar();
+	}
 	return true;
 }
 
 // Vykona tah nad krizovatkou input
-krizovatka vykonajTah(krizovatka input, tah *tah) {
+void vykonajTah(krizovatka input, krizovatka *output, tah *tah) {
 	unsigned char i, j;
-	krizovatka output;
 
 	// Okopirovanie hodnot z input-u do output-u (okrem farby daneho tahu)
 	for (i = 0; i < xSize; i++) {
 		for (j = 0; j < ySize; j++) {
 			if (input.mapa[i][j] != tah->farba) {
-				output.mapa[i][j] = input.mapa[i][j];
+				output->mapa[i][j] = input.mapa[i][j];
 			}
-			else output.mapa[i][j] = 0;
+			else output->mapa[i][j] = 0;
 		}
 	}
 
 	// Horizontalny tah
 	if (tah->smer == 'h') {
 		for (i = 0; i < tah->dlzka; i++)
-			output.mapa[tah->newx + i][tah->newy] = tah->farba;
+			output->mapa[tah->newx + i][tah->newy] = tah->farba;
 	}
 	// Vertikalny tah
 	else {
 		for (j = 0; j < tah->dlzka; j++)
-			output.mapa[tah->newx][tah->newy + j] = tah->farba;
+			output->mapa[tah->newx][tah->newy + j] = tah->farba;
 	}
 
-	return output;
+	return;
 }
 
 UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsigned char cervene) {
@@ -200,13 +278,16 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 	UZOL *result, *novy = new UZOL;
 	pozicia *pozicie[vehicleCount];
 
-	for (i = 0; i < vehicleCount; i++) {
-		pozicie[i] = new pozicia;
-		pozicie[i] = uzol->pozicie[i];
-	}
-
 	novy->hlbka = uzol->hlbka + 1;
 	novy->pred = uzol;
+	novy->tah = new struct tah;
+	novy->pozicie = new pozicia* [vehicleCount];
+
+	for (i = 0; i < vehicleCount; i++) {
+		pozicie[i] = new pozicia;
+		*pozicie[i] = *uzol->pozicie[i];
+		novy->pozicie[i] = new pozicia;
+	}
 
 	for (i = 0; i < pocetVozidiel; i++) {
 		tah->farba = uzol->pozicie[i]->farba;
@@ -215,25 +296,46 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 		tah->oldx = uzol->pozicie[i]->x;
 		tah->oldy = uzol->pozicie[i]->y;
 
+		if (debug) {
+			printf("uzol->hlbka: %d\n", uzol->hlbka);
+			printf("uzol->pozicie[%d]->farba: %d\n", i, uzol->pozicie[i]->farba);
+			printf("uzol->pozicie[%d]->smer: %c\n", i, uzol->pozicie[i]->smer);
+			printf("uzol->pozicie[%d]->x: %d\n", i, uzol->pozicie[i]->x);
+			printf("uzol->pozicie[%d]->y: %d\n", i, uzol->pozicie[i]->y);
+			printf("uzol->pozicie[%d]->dlzka: %d\n", i, uzol->pozicie[i]->dlzka);
+			printf("uzol->krizovatka:\n");
+			debugVypis(uzol->krizovatka);
+			getchar();
+		}
+
 		// Vozidlo je horizontalne
 		if (uzol->pozicie[i]->smer == 'h') {
 			tah->newy = uzol->pozicie[i]->y;
 
 			// Najde vsetky mozne tahy
 			for (j = 0; j < (xSize - tah->dlzka + 1); j++) {
+
+				// Preskocenie nepohnutia sa
+				if (j == tah->oldx) continue;
+
 				tah->newx = j;
 
 				// Ak je tah platny
 				if (overTah(uzol->krizovatka, tah)) {
-					novy->krizovatka = vykonajTah(uzol->krizovatka, tah);
+					vykonajTah(uzol->krizovatka, &novy->krizovatka, tah);
+
+					if (debug) {
+						debugVypis(novy->krizovatka);
+						getchar();
+					}
 
 					// Ak krizovatka este nebola navstivena
 					if (isNotNavstivene(novy->krizovatka, novy->hlbka)) {
-						novy->tah = tah;
+						*novy->tah = *tah;
 
 						for (k = 0; k < pocetVozidiel; k++) {
 							if (k != i) {
-								pozicie[k] = uzol->pozicie[k];
+								*pozicie[k] = *uzol->pozicie[k];
 							}
 							else {
 								pozicie[k]->dlzka = uzol->pozicie[k]->dlzka;
@@ -242,9 +344,9 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 								pozicie[k]->y = uzol->pozicie[k]->y;
 								pozicie[k]->x = j;
 							}
-						}
 
-						novy->pozicie = pozicie;
+							*novy->pozicie[k] = *pozicie[k];
+						}
 
 						result = IDS(novy, maxHlbka, pocetVozidiel, cervene);
 
@@ -261,19 +363,28 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 
 			// Najde vsetky mozne tahy
 			for (j = 0; j < (ySize - tah->dlzka + 1); j++) {
+
+				// Preskocenie nepohnutia sa
+				if (j == tah->oldy) continue;
+
 				tah->newy = j;
 
 				// Ak je tah platny
 				if (overTah(uzol->krizovatka, tah)) {
-					novy->krizovatka = vykonajTah(uzol->krizovatka, tah);
+					vykonajTah(uzol->krizovatka, &novy->krizovatka, tah);
+
+					if (debug) {
+						debugVypis(novy->krizovatka);
+						getchar();
+					}
 
 					// Ak krizovatka este nebola navstivena
 					if (isNotNavstivene(novy->krizovatka, novy->hlbka)) {
-						novy->tah = tah;
+						*novy->tah = *tah;
 
 						for (k = 0; k < pocetVozidiel; k++) {
 							if (k != i) {
-								pozicie[k] = uzol->pozicie[k];
+								*pozicie[k] = *uzol->pozicie[k];
 							}
 							else {
 								pozicie[k]->dlzka = uzol->pozicie[k]->dlzka;
@@ -282,9 +393,9 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 								pozicie[k]->x = uzol->pozicie[k]->x;
 								pozicie[k]->y = j;
 							}
-						}
 
-						novy->pozicie = pozicie;
+							*novy->pozicie[k] = *pozicie[k];
+						}
 
 						result = IDS(novy, maxHlbka, pocetVozidiel, cervene);
 
