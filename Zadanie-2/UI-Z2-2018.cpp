@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
-#include <string>
 
 using std::vector;
 
@@ -126,7 +125,7 @@ bool isNotNavstivene(krizovatka k, unsigned char h) {
 }
 
 // Kontrola platnosti tahu
-bool overTah(krizovatka input, tah *tah) {
+bool overTah(krizovatka k, tah *tah) {
 	unsigned char i, j;
 
 	// Horizontalny tah
@@ -142,10 +141,10 @@ bool overTah(krizovatka input, tah *tah) {
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->dlzka: %d\n", tah->dlzka);
 				printf("krizovatka:\n");
-				debugVypis(input);
+				debugVypis(k);
 			}
 			for (i = tah->oldx; i < (tah->newx + tah->dlzka); i++) {
-				if ((input.mapa[i][tah->newy] != 0) && (input.mapa[i][tah->newy] != tah->farba)) {
+				if ((k.mapa[i][tah->newy] != 0) && (k.mapa[i][tah->newy] != tah->farba)) {
 					if (debug) {
 						printf("Neplatny tah\n");
 						getchar();
@@ -165,10 +164,10 @@ bool overTah(krizovatka input, tah *tah) {
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->dlzka: %d\n", tah->dlzka);
 				printf("krizovatka:\n");
-				debugVypis(input);
+				debugVypis(k);
 			}
 			for (i = tah->newx; i < tah->oldx; i++) {
-				if (input.mapa[i][tah->newy] != 0) {
+				if (k.mapa[i][tah->newy] != 0) {
 					if (debug) {
 						printf("Neplatny tah\n");
 						getchar();
@@ -191,10 +190,10 @@ bool overTah(krizovatka input, tah *tah) {
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->dlzka: %d\n", tah->dlzka);
 				printf("krizovatka:\n");
-				debugVypis(input);
+				debugVypis(k);
 			}
 			for (j = tah->oldy; j < (tah->newy + tah->dlzka); j++) {
-				if ((input.mapa[tah->newx][j] != 0) && (input.mapa[tah->newx][j] != tah->farba)) {
+				if ((k.mapa[tah->newx][j] != 0) && (k.mapa[tah->newx][j] != tah->farba)) {
 					if (debug) {
 						printf("Neplatny tah\n");
 						getchar();
@@ -214,10 +213,10 @@ bool overTah(krizovatka input, tah *tah) {
 				printf("tah->newy: %d\n", tah->newy);
 				printf("tah->dlzka: %d\n", tah->dlzka);
 				printf("krizovatka:\n");
-				debugVypis(input);
+				debugVypis(k);
 			}
 			for (j = tah->newy; j < tah->oldy; j++) {
-				if (input.mapa[tah->newx][j] != 0) {
+				if (k.mapa[tah->newx][j] != 0) {
 					if (debug) {
 						printf("Neplatny tah\n");
 						getchar();
@@ -409,6 +408,16 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 		}
 	}
 
+	for (i = 0; i < vehicleCount; i++) {
+		delete pozicie[i];
+		delete novy->pozicie[i];
+	}
+
+	delete novy->tah;
+	delete novy->pozicie;
+	delete novy;
+	delete tah;
+
 	return NULL;
 }
 
@@ -533,6 +542,7 @@ int main() {
 	printf("V hlbke 0 sa nenachadza vysledok\n");
 
 	for (i = 1; i <= hlbka; i++) {
+		navstivene.clear();
 		result = IDS(uzol, i, pocetVozidiel, cervene);
 
 		if (result != NULL) {
@@ -573,6 +583,7 @@ int main() {
 			}
 
 			printf("Pre ukoncenie programu stlacte Enter");
+			navstivene.clear();
 			getchar();
 			return 0;
 		}
@@ -582,6 +593,7 @@ int main() {
 	}
 	
 	printf("Pre ukoncenie programu stlacte Enter");
+	navstivene.clear();
 	getchar();
 	return 0;
 }
