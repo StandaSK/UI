@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <string>
 
 using std::vector;
 
@@ -418,6 +419,7 @@ int main() {
 	uzol *uzol, *result = NULL;
 	pozicia *pozicie[vehicleCount];
 
+
 	for (i = 0; i < vehicleCount; i++) {
 		pozicie[i] = new pozicia;
 	}
@@ -528,6 +530,8 @@ int main() {
 	getchar();	// Preskocenie noveho riadku
 	printf("Spustam hladanie koncoveho stavu do hlbky %d.\n", hlbka);
 
+	printf("V hlbke 0 sa nenachadza vysledok\n");
+
 	for (i = 1; i <= hlbka; i++) {
 		result = IDS(uzol, i, pocetVozidiel, cervene);
 
@@ -539,9 +543,32 @@ int main() {
 
 			UZOL* akt = result;
 
-			while (akt != NULL) {
-				printf("Predchadzajuci stav:\n");
-				vypis(akt->krizovatka);
+			while (akt->pred != NULL) {
+				printf("(%s [%d] ", farby[akt->tah->farba - 1], akt->tah->farba);
+				if (akt->tah->smer == 'h') {
+					if (akt->tah->newx > akt->tah->oldx) {
+						printf("doprava %d)\n", akt->tah->newx - akt->tah->oldx);
+					}
+					else {
+						printf("dolava %d)\n", akt->tah->oldx - akt->tah->newx);
+					}
+				}
+				else {
+					if (akt->tah->newy > akt->tah->oldy) {
+						printf("dole %d)\n", akt->tah->newy - akt->tah->oldy);
+					}
+					else {
+						printf("hore %d)\n", akt->tah->oldy - akt->tah->newy);
+					}
+				}
+
+				if (akt->pred->pred == NULL) {
+					printf("Pociatocna krizovatka:\n");
+				}
+				else {
+					printf("Priebezny stav:\n");
+				}
+				vypis(akt->pred->krizovatka);
 				akt = akt->pred;
 			}
 
