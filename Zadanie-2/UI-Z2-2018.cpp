@@ -348,6 +348,8 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 							*novy->pozicie[k] = *pozicie[k];
 						}
 
+						navstivene.insert(navstivene.begin(), *novy);
+
 						result = IDS(novy, maxHlbka, pocetVozidiel, cervene);
 
 						if (result != NULL) {
@@ -396,6 +398,8 @@ UZOL *IDS(UZOL *uzol, unsigned char maxHlbka, unsigned char pocetVozidiel, unsig
 
 							*novy->pozicie[k] = *pozicie[k];
 						}
+
+						navstivene.insert(navstivene.begin(), *novy);
 
 						result = IDS(novy, maxHlbka, pocetVozidiel, cervene);
 
