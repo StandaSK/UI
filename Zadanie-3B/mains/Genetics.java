@@ -1,12 +1,11 @@
 package mains;
 
+import customType.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import customType.*;
-
 public class Genetics {
-	/* Inicializácia prvých count jedincov */
+	/* Inicializacia prvych count jedincov */
 	public static List<StepSequence> initialize(int count) {
 		List<StepSequence> individuals = new ArrayList<StepSequence>(count);
 		
@@ -17,15 +16,15 @@ public class Genetics {
 	}
 	
 	/**
-	 * Zo starej generácie individuals vytvorí novú
-	 * @param individuals stará generácia
-	 * @return nová generácia
+	 * Zo starej generacie individuals vytvori novu
+	 * @param individuals stara generacia
+	 * @return nova generacia
 	 */
 	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals) {
 		int size = individuals.size();
 		List<StepSequence> newGeneration = new ArrayList<StepSequence>(size);
 		
-		/* Výber (Main.ELITARISM_LEVEL * size) najlepších jedincov */
+		/* Vyber (Main.ELITARISM_LEVEL * size) najlepsich jedincov */
 		newGeneration = individuals.stream().sorted((a, b) -> {
 			if (a.getFitness() > b.getFitness()) return -1;
 			else if (a.getFitness() < b.getFitness()) return 1;
@@ -33,22 +32,22 @@ public class Genetics {
 			.limit((int) (MainFile.ELITARISM_RATE * size))
 			.collect(Collectors.toList());
 		
-		/* Vygenerovanie nových (Main.NEW_INDIVIDUAL_RATE * size) náhodných jedincov */
-		for(int i = 0; i < MainFile.NEW_INDIVIDUAL_RATE * size; i++)
+		/* Vygenerovanie novych (Main.NEW_INDIVIDUAL_RATE * size) nahodnych jedincov */
+		for (int i = 0; i < MainFile.NEW_INDIVIDUAL_RATE * size; i++)
 			newGeneration.add(Evolution.generate());
 		
-		/* Mutovanie a kríženie starej generácie do novej */
+		/* Mutovanie a krizenie starej generacie do novej */
 		for (StepSequence ss : individuals) {
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
-			/* Mutovanie starej generácie do novej */
+			/* Mutovanie starej generacie do novej */
 			if (MainFile.MUTATION_RATE > Math.random()) {
 				newGeneration.add(mutate(ss));
 			}
 			
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
-			/* Kríženie starej generácie do novej */
+			/* Krizenie starej generacie do novej */
 			if (MainFile.CROSSOVER_RATE > Math.random()) {
 				newGeneration.add(crossOver(individuals.get((int) (Math.random() * individuals.size())), ss));
 			}
@@ -59,12 +58,12 @@ public class Genetics {
 		return newGeneration;
 	}
 	
-	/* Mutácia náhodného kroku jednica ss */
+	/* Mutacia nahodneho kroku jednica ss */
 	public static StepSequence mutate(StepSequence ss) {
 		int[] steps = ss.getSteps();
-		/* Vygenerovanie náhodného èísla pre poradie kroku */
+		/* Vygenerovanie nahodneho cisla pre poradie kroku */
 		int rndPos = (int) Math.floor(Math.random() * steps.length);
-		/* Vygenerovanie náhodného kroku */
+		/* Vygenerovanie nahodneho kroku */
 		int rndNum = (int) Math.floor(Math.random() * MainFile.MAX_VALUES);
 		
 		
@@ -72,7 +71,7 @@ public class Genetics {
 		return new StepSequence(steps);
 	}
 	
-	/* Kríženie dvoch jedincov do jedného */
+	/* Krizenie dvoch jedincov do jedneho */
 	public static StepSequence crossOver(StepSequence ss1, StepSequence ss2) {
 		int size;
 		int ss1Length = ss1.getSteps().length;

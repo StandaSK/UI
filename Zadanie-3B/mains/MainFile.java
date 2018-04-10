@@ -1,20 +1,19 @@
 package mains;
 
-import java.util.*;
-
 import customType.*;
+import java.util.*;
 
 public class MainFile {
 	public final static int MEMORY_CELL_COUNT = 64;
 	public final static int STARTING_MEMORY_CELL_COUNT = 32;
 	public final static int MAX_STEP_COUNT = 500;
-	public final static int INDIVIDUAL_COUNT = 1000;
-	public final static int GENERATION_COUNT = 200;
+	public final static int INDIVIDUAL_COUNT = 200;
+	public final static int GENERATION_COUNT = 2000;
 	public final static int TREASURE_COUNT = 5;
 	public final static int MAX_VALUES = 255;
-	public final static double ELITARISM_RATE = 0.1;
-	public final static double NEW_INDIVIDUAL_RATE = 0.3;
-	public final static double MUTATION_RATE = 0.2;
+	public final static double ELITARISM_RATE = 0.15;
+	public final static double NEW_INDIVIDUAL_RATE = 0.4;
+	public final static double MUTATION_RATE = 0.5;
 	public final static double CROSSOVER_RATE = 0.5;
 	
 	public static void main(String[] args) {
@@ -25,17 +24,17 @@ public class MainFile {
 			new CustomVector(4,5), new CustomVector(6,3));
 		Evolution evolution = new Evolution();
 		
-		/* Vytvorenie úvodnej generácie */
+		/* Vytvorenie uvodnej generacie */
 		List<StepSequence> individuals = Genetics.initialize(INDIVIDUAL_COUNT);
 		
-		/* Tvorenie nasledujúcich generácií */
+		/* Tvorenie nasledujucich generacii */
 		for (int j = 0; j < GENERATION_COUNT; j++) {
 			for (StepSequence i : individuals) {
-				/* Ak ešte nebol spracovaný */
+				/* Ak este nebol spracovany */
 				if (i.isExecuted() == false) {
 					evolution.execute(i, mapSize);
 				}
-				/* Ak ešte neh¾adal poklady */
+				/* Ak este nehladal poklady */
 				if (i.isTracked() == false) {
 					map.findTreasures(i, new CustomVector(startingPosition.getX(), startingPosition.getY()));
 				}
@@ -43,24 +42,24 @@ public class MainFile {
 			
 			Evolution.output(individuals, j);
 			
-			/* Vytvorenie novej generácie jednotlivcov */
+			/* Vytvorenie novej generacie jednotlivcov */
 			individuals = Genetics.createNewGeneration(individuals);
 		}
 	}
 	
 	/**
-	 * Zmeni èíslo na binárne - do Stringu
-	 * @param number menené èíslo
-	 * @return binárne èíslo, reprezentované Stringom
+	 * Zmeni cislo na binarne - do Stringu
+	 * @param number menene cislo
+	 * @return binarne cislo, reprezentovane Stringom
 	 */
-	public static String getBytesOfInt(int number){
+	public static String getBytesOfInt(int number) {
 		return String.format("%8s", Integer.toBinaryString(number & 0xFF)).replace(' ', '0');
 	}
 	
 	/**
-	 * Zmení binárne èíslo reprezentované Stringom spä na integer
-	 * @param val binárne èíslo, reprezentované Stringom
-	 * @return zmenené èíslo
+	 * Zmeni binarne cislo reprezentovane Stringom spat na integer
+	 * @param val binarne cislo, reprezentovane Stringom
+	 * @return zmenene cislo
 	 */
 	public static int getIntValue(String val) {
 		int result = 0;

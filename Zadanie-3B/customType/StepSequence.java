@@ -14,13 +14,13 @@ public class StepSequence {
 	private boolean tracked;
 	private boolean executed;
 	
-	/* Konštruktor */
+	/* Konstruktor */
 	public StepSequence(int[] steps) {
 		this.setSteps(steps);
 		//this.setStepCount(steps.length);
 	}
 	
-	/* Slúži na výpis atribútov jedinca */
+	/* Sluzi na vypis atributov jedinca */
 	public String toString() {
 		return ("Steps: " + stepCount + '\n' +
 				//MainFile.getBytesOfInt(steps[63]) + '\n' +
@@ -28,7 +28,7 @@ public class StepSequence {
 				"Fitness: " + fitness + '\n');
 	}
 	
-	/* Nastaví hodnoty a oznaèí sa ako už prejdený */
+	/* Nastavi hodnoty a oznaci sa ako uz prejdeny */
 	public void track(int treasureCount, int stepCount) {
 		this.setTreasureCount(treasureCount);
 		this.setStepCount(stepCount);

@@ -3,7 +3,7 @@ package customType;
 public class CustomVector {
 	private float x,y;
 	
-	/* Konštruktor */
+	/* Konstruktor */
 	public CustomVector(float x, float y) {
 		this.setX(x);
 		this.setY(y);
@@ -39,10 +39,10 @@ public class CustomVector {
 	}
 	
 	/**
-	 * Funkcia zistí èi sa bod nachádza v obdåniku
-	 * @param pos poèiatoèná pozícia obdånika
-	 * @param size ve¾kos obdånika
-	 * @return TRUE ak sa v òom nachádza, FALSE ak nie
+	 * Funkcia zisti ci sa bod nachadza v obdlzniku
+	 * @param pos pociatocna pozicia obdlnika
+	 * @param size velkost obdlznika
+	 * @return TRUE ak sa v nom nachadza, FALSE ak nie
 	 */
 	public boolean isInRectangle(CustomVector pos, CustomVector size) {
 		//System.out.println(pos.x + "\t" + (pos.x + size.x) + "\t" + pos.y + "\t" +(pos.y + size.y));

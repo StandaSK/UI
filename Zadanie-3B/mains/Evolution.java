@@ -1,8 +1,7 @@
 package mains;
 
-import java.util.*;
-
 import customType.*;
+import java.util.*;
 
 public class Evolution {
 	private static Set<String> allSteps = new HashSet<String>();
@@ -13,15 +12,15 @@ public class Evolution {
 	private int[] newSteps;
 	
 	/**
-	 * Úvodná inicializácia prvých STARTING_MEMORY_CELL_COUNT génov jedinca
-	 * @return Novo vygenerovaný jedinec
+	 * Uvodna inicializacia prvych STARTING_MEMORY_CELL_COUNT genov jedinca
+	 * @return Novo vygenerovany jedinec
 	 */
 	public static StepSequence generate() {
 		int[] steps = new int[MainFile.MEMORY_CELL_COUNT];
 		
 		String path = "";
 		
-		/* Vygenerovanie nových krokov, while zabezpeèuje aby sa neopakovali */
+		/* Vygenerovanie novych krokov, while zabezpecuje aby sa neopakovali */
 		while (sources.contains(path)) {
 			path = "";
 			for (int i = 0; i < MainFile.STARTING_MEMORY_CELL_COUNT; i++) {
@@ -57,11 +56,11 @@ public class Evolution {
 		
 		switch (operator) {
 			case "00":
-				/* Inkrementácia */
+				/* Inkrementacia */
 				newSteps[temp] += 1;
 				break;
 			case "01":
-				/* Dekrementácia */
+				/* Dekrementacia */
 				newSteps[temp] -= 1;
 				break;
 			case "10":
@@ -69,13 +68,13 @@ public class Evolution {
 				newStepIndex = temp;
 				break;
 			case "11":
-				/* Výpis do StringBuilderu */
+				/* Vypis do StringBuilderu */
 				sb.append(getStepAsChar(newSteps[temp]));
 				break;
 		}
 	}
 	
-	/* Zo vstupu zistí kroky */
+	/* Zo vstupu zisti kroky */
 	private char getStepAsChar(int tmp) {
 		int mapSize = 49;
 		byte[] num = MainFile.getBytesOfInt(tmp).getBytes();
@@ -125,6 +124,7 @@ public class Evolution {
 			treasureSum += ss.getTreasureCount();
 			stepSum += ss.getStepCount();
 		}
+		
 		int listSize = list.size();
 		//System.out.println(generation);
 		System.out.println(generation + ". Generation: Operation Counter: " + operationCounter + "\nBest: "
