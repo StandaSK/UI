@@ -7,14 +7,14 @@ public class MainFile {
 	public final static int MEMORY_CELL_COUNT = 64;
 	public final static int STARTING_MEMORY_CELL_COUNT = 32;
 	public final static int MAX_STEP_COUNT = 500;
-	public final static int INDIVIDUAL_COUNT = 200;
+	public final static int INDIVIDUAL_COUNT = 100;
 	public final static int GENERATION_COUNT = 2000;
 	public final static int TREASURE_COUNT = 5;
 	public final static int MAX_VALUES = 255;
-	public final static double ELITARISM_RATE = 0.10;
+	public final static double ELITARISM_RATE = 0.05;
 	public final static double NEW_INDIVIDUAL_RATE = 0.4;
 	public final static double MUTATION_RATE = 0.5;
-	public final static double CROSSOVER_RATE = 0.5;
+	public final static double CROSSOVER_RATE = 0.9;
 	
 	public static void main(String[] args) {
 		CustomVector mapSize = new CustomVector(7,7);
@@ -25,7 +25,8 @@ public class MainFile {
 		Evolution evolution = new Evolution();
 		
 		/* Vytvorenie uvodnej generacie */
-		List<StepSequence> individuals = Genetics.initialize(INDIVIDUAL_COUNT);
+		List<StepSequence> initialGeneration = Genetics.initialize(INDIVIDUAL_COUNT);
+		List<StepSequence> individuals = new ArrayList<StepSequence>(initialGeneration);
 		
 		/* Tvorenie nasledujucich generacii */
 		for (int j = 0; j < GENERATION_COUNT; j++) {
@@ -42,13 +43,13 @@ public class MainFile {
 			
 			Evolution.output(individuals, j);
 			
+			/* Vytvorenie novej generacie jednotlivcov */
+			individuals = Genetics.createNewGeneration(individuals, initialGeneration);
+			
 			if (individuals.get(0).getTreasureCount() == TREASURE_COUNT) {
 				j = GENERATION_COUNT;
 				break;
 			}
-			
-			/* Vytvorenie novej generacie jednotlivcov */
-			individuals = Genetics.createNewGeneration(individuals);
 		}
 		
 		StepSequence best = individuals.get(0);

@@ -33,13 +33,13 @@ public class Evolution {
 	}
 	
 	public void execute(StepSequence ss, CustomVector mapSize) {
-		int fieldCount = (int) (mapSize.getX() * mapSize.getY());
+		//int fieldCount = (int) (mapSize.getX() * mapSize.getY());
 		operationCounter = 0;
 		newStepIndex = 0;
 		this.newSteps = ss.getSteps();
 		sb = new StringBuilder();
 		
-		while (sb.length() < fieldCount && newStepIndex >= 0 && newStepIndex < MainFile.MEMORY_CELL_COUNT && operationCounter < MainFile.MAX_STEP_COUNT) {
+		while (/*sb.length() < fieldCount && */newStepIndex >= 0 && newStepIndex < MainFile.MEMORY_CELL_COUNT && operationCounter < MainFile.MAX_STEP_COUNT) {
 			operate();
 		}
 		

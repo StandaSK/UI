@@ -63,7 +63,7 @@ public class Map {
 			}
 
 			//System.out.println("FT: " + path);
-
+			
 			stepCount++;
 			path = path.substring(1);
 		}

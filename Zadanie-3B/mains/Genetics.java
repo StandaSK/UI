@@ -20,7 +20,7 @@ public class Genetics {
 	 * @param individuals stara generacia
 	 * @return nova generacia
 	 */
-	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals) {
+	public static List<StepSequence> createNewGeneration(List<StepSequence> individuals, List<StepSequence> initialGeneration) {
 		int size = individuals.size();
 		List<StepSequence> newGeneration = new ArrayList<StepSequence>(size);
 		
@@ -36,18 +36,18 @@ public class Genetics {
 		for (int i = 0; i < MainFile.NEW_INDIVIDUAL_RATE * size; i++)
 			newGeneration.add(Evolution.generate());
 		
-		/* Mutovanie a krizenie starej generacie do novej */
-		for (StepSequence ss : individuals) {
+		/* Mutovanie a krizenie povodnej generacie do novej */
+		for (StepSequence ss : initialGeneration) {
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
-			/* Mutovanie starej generacie do novej */
+			/* Mutovanie povodnej generacie do novej */
 			if (MainFile.MUTATION_RATE > Math.random()) {
 				newGeneration.add(mutate(ss));
 			}
 			
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
-			/* Krizenie starej generacie do novej */
+			/* Krizenie starej a povodnej generacie do novej */
 			if (MainFile.CROSSOVER_RATE > Math.random()) {
 				newGeneration.add(crossOver(individuals.get((int) (Math.random() * individuals.size())), ss));
 			}
