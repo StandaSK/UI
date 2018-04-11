@@ -20,7 +20,7 @@ public class MainFile {
 	
 	public static void main(String[] args) {
 		CustomVector mapSize = new CustomVector(7,7);
-		CustomVector startingPosition = new CustomVector(0,5);
+		CustomVector startingPosition = new CustomVector(0,3);
 		Map map = new Map(mapSize, new CustomVector(1,4),
 			new CustomVector(2,1), new CustomVector(4,2),
 			new CustomVector(5,4), new CustomVector(3,6));
