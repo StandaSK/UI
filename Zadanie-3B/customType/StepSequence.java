@@ -55,5 +55,5 @@ public class StepSequence {
 		this.setExecuted(true);
 	}
 	public void setTracked(boolean tracked) { this.tracked = tracked; }
-	public void setExecuted(boolean exists) { this.executed = exists; }
+	public void setExecuted(boolean executed) { this.executed = executed; }
 }
