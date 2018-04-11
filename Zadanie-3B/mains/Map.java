@@ -44,12 +44,12 @@ public class Map {
 				position.setY(position.getY() - 1);
 			}
 						
-			/* Ak sa sucasny bod nenachadza v obdlzniku velkosti X+1, Y+1 */
+			/* Ak sa sucasny bod nenachadza na mape */
 			if (!position.isInRectangle(new CustomVector(0,0),
 					new CustomVector(size.getX(), size.getY()))) {
 				/* Oznaci sa tento jedinec ako prejdeny a hladanie skonci */
-				//System.out.println("FTC: " + foundTreasureCount + "\tSC: " + stepCount);
 				ss.track(foundTreasureCount, stepCount);
+				//System.out.println("FTC: " + foundTreasureCount + "\tSC: " + stepCount +" x: " + position.getX() + " y: " + position.getY());
 				return;
 			}
 			

@@ -8,7 +8,7 @@ public class MainFile {
 	public final static int STARTING_MEMORY_CELL_COUNT = 32;
 	public final static int MAX_STEP_COUNT = 500;
 	public final static int INDIVIDUAL_COUNT = 200;
-	public final static int GENERATION_COUNT = 2000;
+	public final static int GENERATION_COUNT = 200;
 	public final static int TREASURE_COUNT = 5;
 	public final static int MAX_VALUES = 255;
 	public final static double ELITARISM_RATE = 0.15;
@@ -42,8 +42,25 @@ public class MainFile {
 			
 			Evolution.output(individuals, j);
 			
+			if (individuals.get(0).getTreasureCount() == TREASURE_COUNT) {
+				j = GENERATION_COUNT;
+				break;
+			}
+			
 			/* Vytvorenie novej generacie jednotlivcov */
 			individuals = Genetics.createNewGeneration(individuals);
+		}
+		
+		StepSequence best = individuals.get(0);
+		
+		for (int i = 0; i < best.getPath().length(); i++) {
+			System.out.print(best.getPath().substring(i, i+1) + ", ");
+		}
+		
+		System.out.println();
+		
+		for (int i = 0; i < best.getStepCount(); i++) {
+			System.out.print(Evolution.getStepAsChar(best.getSteps()[i]) + ", ");
 		}
 	}
 	

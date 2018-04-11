@@ -75,7 +75,7 @@ public class Evolution {
 	}
 	
 	/* Zo vstupu zisti kroky */
-	private char getStepAsChar(int tmp) {
+	public static char getStepAsChar(int tmp) {
 		int mapSize = 49;
 		byte[] num = MainFile.getBytesOfInt(tmp).getBytes();
 		int count = 0;
