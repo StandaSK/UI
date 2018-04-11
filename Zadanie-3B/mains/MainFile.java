@@ -14,11 +14,13 @@ public class MainFile {
 	public final static double ELITARISM_RATE = 0.05;
 	public final static double NEW_INDIVIDUAL_RATE = 0.4;
 	public final static double MUTATION_RATE = 0.5;
+	public final static double ELITE_MUTATION_RATE = 0.05;
 	public final static double CROSSOVER_RATE = 0.9;
+	public final static double ELITE_CROSSOVER_RATE = 0.05;
 	
 	public static void main(String[] args) {
 		CustomVector mapSize = new CustomVector(7,7);
-		CustomVector startingPosition = new CustomVector(0,3);
+		CustomVector startingPosition = new CustomVector(0,5);
 		Map map = new Map(mapSize, new CustomVector(1,4),
 			new CustomVector(2,1), new CustomVector(4,2),
 			new CustomVector(5,4), new CustomVector(3,6));

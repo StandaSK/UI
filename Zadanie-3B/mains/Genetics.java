@@ -42,14 +42,25 @@ public class Genetics {
 			
 			/* Mutovanie povodnej generacie do novej */
 			if (MainFile.MUTATION_RATE > Math.random()) {
-				newGeneration.add(mutate(ss));
+				if (MainFile.ELITE_MUTATION_RATE > Math.random()) {
+					newGeneration.add(mutate(individuals.get((int) (Math.random() * MainFile.ELITARISM_RATE * size))));
+				}
+				else {
+					newGeneration.add(mutate(ss));
+				}
+				continue;
 			}
 			
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
 			
 			/* Krizenie starej a povodnej generacie do novej */
 			if (MainFile.CROSSOVER_RATE > Math.random()) {
-				newGeneration.add(crossOver(individuals.get((int) (Math.random() * individuals.size())), ss));
+				if (MainFile.ELITE_CROSSOVER_RATE > Math.random()) {
+					newGeneration.add(crossOver(individuals.get((int) (Math.random() * MainFile.ELITARISM_RATE * size)), ss));
+				}
+				else {
+					newGeneration.add(crossOver(individuals.get((int) (Math.random() * individuals.size())), ss));
+				}
 			}
 			
 			if (newGeneration.size() == MainFile.INDIVIDUAL_COUNT) { break; }
