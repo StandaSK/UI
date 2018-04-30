@@ -1,15 +1,21 @@
 package mainPackage;
 
-import java.io.*;
-import java.util.*;
-
-import customType.*;
+import customType.Rule;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainFile {
 	public final static String FACTS_FILE_NAME = "fakty.txt";
 	public final static String RULES_FILE_NAME = "pravidla.txt";
 	public final static boolean DEBUG_INPUT = false;
-	//public final static boolean DEBUG_OUTPUT = false;
 	
 	private static List<String> facts = new ArrayList<String>();
 	private static List<Rule> rules = new ArrayList<Rule>();
@@ -17,7 +23,7 @@ public class MainFile {
 	
 	public static void main(String[] args) {
 		
-		/* Načítanie faktov */
+		/* Nacitanie faktov */
 		try (BufferedReader factsReader = new BufferedReader(new FileReader(FACTS_FILE_NAME))) {
 			String line = null;
 			
@@ -25,14 +31,14 @@ public class MainFile {
 				facts.add(line);
 		    }
 			
-			if (DEBUG_INPUT) System.out.println("Vstupné fakty:\n" + facts);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
+			if (DEBUG_INPUT) { System.out.println("Vstupne fakty:\n" + facts); }
+		} catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 		
-		/* Načítanie pravidiel */
+		/* Nacitanie pravidiel */
 		try (BufferedReader rulesReader = new BufferedReader(new FileReader(RULES_FILE_NAME))) {
 			String line = null;
 			String[] tempArray = null;
@@ -42,36 +48,36 @@ public class MainFile {
 				
 				/* Nacitanie nazvu pravidla */
 				rule.setName(line);
-				if (DEBUG_INPUT) System.out.println("Pravidlo: " + line);
+				if (DEBUG_INPUT) { System.out.println("Pravidlo: " + line); }
 				
 				/* Nacitanie podmienok pravidla */
 				line = rulesReader.readLine();
 				line = line.replace("AK ", "");
 				tempArray = line.replace("((" , "").replace("))" , "").split("\\)\\(");
 				rule.setConditions(tempArray);
-				if (DEBUG_INPUT) System.out.println("Podmienky: " + line);
+				if (DEBUG_INPUT) { System.out.println("Podmienky: " + line); }
 				
 				/* Nacitanie akcii pravidla */
 				line = rulesReader.readLine();
 				line = line.replace("POTOM ", "");
 				tempArray = line.replace("((" , "").replace("))" , "").split("\\)\\(");
 				rule.setActions(tempArray);
-				if (DEBUG_INPUT) System.out.println("Akcie: " + line);
+				if (DEBUG_INPUT) { System.out.println("Akcie: " + line); }
 				
 				/* Prejdenie prazdneho riadku medzi pravidlami */
 				line = rulesReader.readLine();
-				if (DEBUG_INPUT) System.out.println();
+				if (DEBUG_INPUT) { System.out.println(); }
 				
 				rules.add(rule);
 			}
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
+		} catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 		
 		while (true) {
-			// Hladanie aplikovatelnych instancii pravidiel - akcii 
+			/* Hladanie aplikovatelnych instancii pravidiel - akcii */ 
 			for (Rule r : rules) {
 				recursion(new HashMap<String, String>(), r, 0);
 			}
@@ -81,8 +87,9 @@ public class MainFile {
 				System.out.println(Arrays.deepToString(s));
 			}*/
 			
-			// Filtrovanie aplikovatelnych instancii pravidiel 
+			/* Filtrovanie aplikovatelnych instancii pravidiel */ 
 			filterAplicableRules();
+			
 			/*System.out.println("Odfiltrovane pravidla: ");
 			for (String[] s : aplicableRules) {
 				System.out.println(Arrays.deepToString(s));
@@ -93,51 +100,39 @@ public class MainFile {
 				createFact(aplicableRules.get(0));
 				aplicableRules.remove(0);
 			}
+			
 			/* Ak uz ziadne aplikovatelne instancie neexistuju */
 			else break;
 		}
 		
-		/*// Hladanie aplikovatelnych instancii pravidiel - akcii 
-		for (Rule r : rules) {
-			recursion(new HashMap<String, String>(), r, 0);
-		}
-		
-		for (String[] s : aplicableRules) {
-			System.out.println(Arrays.deepToString(s));
-		}
-		
-		// Filtrovanie aplikovatelnych instancii pravidiel 
-		filterAplicableRules();
-		
-		if (!aplicableRules.isEmpty()) { createFact(aplicableRules.get(0)); }
-		//else break;*/
-		
-		/* Prepísanie starého súboru s faktami */
+		/* Prepisanie stareho suboru s faktami */
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(FACTS_FILE_NAME, false))) {
 			for (String str: facts) {
 				out.write(str + System.lineSeparator());
 			}
-		} catch (FileNotFoundException fnf) {
-			fnf.printStackTrace();
+		} catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
 		}
 	}
 	
 	/* Filtrovanie aplikovatelnych instancii pravidiel */
 	private static void filterAplicableRules() {
 		int size = aplicableRules.size();
+		
 		for (int i = 0; i < size; i++) {
 			while ((!aplicableRules.isEmpty()) && (i < aplicableRules.size()) && (!doesChangeAnything(aplicableRules.get(i)))) {
 				//System.out.println("CHECK: " + i + " SIZE: " + aplicableRules.size());
 				aplicableRules.remove(i);
 			}
+			
 			size = aplicableRules.size();
 		}
 	}
 	
 	/* Zisti ci akcie actions nieco menia vo faktoch */
 	private static boolean doesChangeAnything(String[] actions) {
-		/*//Ak je jedina akcia sprava tak hned vrati false
-		if ((actions.length == 1) && (actions[0].startsWith("sprava"))) {
+		/* Ak je jedina akcia sprava tak hned vrati false */
+		/*if ((actions.length == 1) && (actions[0].startsWith("sprava"))) {
 			return false;
 		}*/
 		
@@ -150,6 +145,7 @@ public class MainFile {
 			
 			if (temp) { return true; }
 		}
+		
 		return false;
 	}
 	
@@ -160,9 +156,11 @@ public class MainFile {
 		if (num == rule.getConditions().length - 1) {
 			if (currentCondition.contains("<>")) {
 				String[] tempArray = currentCondition.split(" ");
+				
 				if (isDifferent(tempArray[1], tempArray[2], localMap)) {
 					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
 				}
+				
 				return;
 			}
 			
@@ -170,23 +168,33 @@ public class MainFile {
 				if (isConditionCorrect(replaceVariables(currentCondition, localMap), f)) {
 					List<String> var = findHashValue(currentCondition, f);
 					List<String> keep = new ArrayList<String>();
+					
 					//System.out.println("Pred pridanimK: " + localMap);
+					
 					/* Pridanie premennych do hash mapy */
 					for (String s : var) {
 						String[] temp = s.split(" = ");
 						String tempKeep = localMap.put(temp[0], temp[1]);
+						
 						if (tempKeep != null) {
 							keep.add(temp[0]);
 						}
 					}
+					
 					//System.out.println("PridaneK: " + localMap);
+					
 					/* Pridanie aplikovatelnych instancii */
 					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
+					
 					/* Odstranenie premennych z hash mapy */
 					for (String s : var) {
 						String[] temp = s.split(" = ");
-						if (!keep.contains(temp[0])) localMap.remove(temp[0]);
+						
+						if (!keep.contains(temp[0])) {
+							localMap.remove(temp[0]);
+						}
 					}
+					
 					//System.out.println("OdobraneK: " + localMap);
 				}
 			}
@@ -195,6 +203,7 @@ public class MainFile {
 		else {
 			if (currentCondition.contains("<>")) {
 				String[] tempArray = currentCondition.split(" ");
+				
 				if (isDifferent(tempArray[1], tempArray[2], localMap)) {
 					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
 				}
@@ -204,22 +213,32 @@ public class MainFile {
 					if (isConditionCorrect(replaceVariables(currentCondition, localMap), f)) {
 						List<String> var = findHashValue(currentCondition, f);
 						List<String> keep = new ArrayList<String>();
+						
 						//System.out.println("Pred pridanim: " + localMap);
+						
 						/* Pridanie premennych do hash mapy */
 						for (String s : var) {
 							String[] temp = s.split(" = ");
 							String tempKeep = localMap.put(temp[0], temp[1]);
+							
 							if (tempKeep != null) {
 								keep.add(temp[0]);
 							}
 						}
+						
 						//System.out.println("Pridane: " + localMap);
+						
 						recursion(localMap, rule, num + 1);
+						
 						/* Odstranenie premennych z hash mapy */
 						for (String s : var) {
 							String[] temp = s.split(" = ");
-							if (!keep.contains(temp[0])) localMap.remove(temp[0]);
+							
+							if (!keep.contains(temp[0])) {
+								localMap.remove(temp[0]);
+							}
 						}
+						
 						//System.out.println("Odobrane: " + localMap);
 					}
 				}
@@ -243,6 +262,7 @@ public class MainFile {
 				else { return null; }
 			}
 		}
+		
 		return result;
 	}
 	
@@ -251,8 +271,11 @@ public class MainFile {
 		String[] tempArray = action.replaceAll("[()]", "").split(" ");
 		String temp = action;
 		
-		for (String s : tempArray)
-			if (s.contains("?") && (localMap.containsKey(s))) { temp = temp.replace(s, localMap.get(s)); }
+		for (String s : tempArray) {
+			if (s.contains("?") && (localMap.containsKey(s))) {
+				temp = temp.replace(s, localMap.get(s));
+			}
+		}
 		
 		return temp;
 	}
@@ -271,6 +294,7 @@ public class MainFile {
 		for (int i = 0; i < temp.length; i++) {
 			String a = temp[i];
 			String[] tempArray = a.replaceAll("[()]", "").split(" ");
+			
 			for (String s : tempArray)
 				if (s.contains("?") && (localMap.containsKey(s))) {
 					//System.out.println(temp[i]);
@@ -313,6 +337,7 @@ public class MainFile {
 	/* Porovna ci su mena A a B odlisne - funkcia <> */
 	private static boolean isDifferent(String A, String B, Map<String, String> localMap) {
 		if (localMap.get(A).equals(localMap.get(B))) { return false; }
+		
 		return true;
 	}
 	
@@ -323,17 +348,21 @@ public class MainFile {
 			facts.add(fact);
 			return true;
 		}
+		
 		return false;
 	}
 	
 	/* Odstranenie faktu */
 	private static boolean deleteFact(String fact) {
-		if (facts.contains(fact))
-			for (int i = 0; i < facts.size(); i++)
+		if (facts.contains(fact)) {
+			for (int i = 0; i < facts.size(); i++) {
 				if (facts.get(i).equals(fact)) {
 					facts.remove(i);
 					return true;
 				}
+			}
+		}
+		
 		return false;
 	}
 	
