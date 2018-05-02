@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,10 @@ public class MainFile {
 	public final static String FACTS_FILE_NAME = "fakty.txt";
 	public final static String RULES_FILE_NAME = "pravidla.txt";
 	public final static boolean DEBUG_INPUT = false;
+	public final static boolean DEBUG_CYCLE = false;
+	public final static boolean DEBUG_FILTER = false;
+	public final static boolean DEBUG_RECURSION = false;
+	public final static boolean DEBUG_REPLACE = false;
 	
 	private static List<String> facts = new ArrayList<String>();
 	private static List<Rule> rules = new ArrayList<Rule>();
@@ -82,18 +87,22 @@ public class MainFile {
 				recursion(new HashMap<String, String>(), r, 0);
 			}
 			
-			/*System.out.println("Neodfiltrovane pravidla: ");
-			for (String[] s : aplicableRules) {
-				System.out.println(Arrays.deepToString(s));
-			}*/
+			if (DEBUG_CYCLE) {
+				System.out.println("Neodfiltrovane pravidla: ");
+				for (String[] s : aplicableRules) {
+					System.out.println(Arrays.deepToString(s));
+				}
+			}
 			
 			/* Filtrovanie aplikovatelnych instancii pravidiel */ 
 			filterAplicableRules();
 			
-			/*System.out.println("Odfiltrovane pravidla: ");
-			for (String[] s : aplicableRules) {
-				System.out.println(Arrays.deepToString(s));
-			}*/
+			if (DEBUG_CYCLE) {
+				System.out.println("Odfiltrovane pravidla: ");
+				for (String[] s : aplicableRules) {
+					System.out.println(Arrays.deepToString(s));
+				}
+			}
 			
 			/* Vyber prvej aplikovatelnej instancie a jej vykonanie*/
 			if (!aplicableRules.isEmpty()) {
@@ -121,7 +130,10 @@ public class MainFile {
 		
 		for (int i = 0; i < size; i++) {
 			while ((!aplicableRules.isEmpty()) && (i < aplicableRules.size()) && (!doesChangeAnything(aplicableRules.get(i)))) {
-				//System.out.println("CHECK: " + i + " SIZE: " + aplicableRules.size());
+				if (DEBUG_FILTER) {
+					System.out.println("i: " + i + " SIZE: " + aplicableRules.size());
+				}
+				
 				aplicableRules.remove(i);
 			}
 			
@@ -131,11 +143,6 @@ public class MainFile {
 	
 	/* Zisti ci akcie actions nieco menia vo faktoch */
 	private static boolean doesChangeAnything(String[] actions) {
-		/* Ak je jedina akcia sprava tak hned vrati false */
-		/*if ((actions.length == 1) && (actions[0].startsWith("sprava"))) {
-			return false;
-		}*/
-		
 		boolean temp = false;
 		
 		for (String f : actions) {
@@ -154,6 +161,10 @@ public class MainFile {
 		
 		/* Ak uz je na poslednej urovni rekurzie */
 		if (num == rule.getConditions().length - 1) {
+			if (DEBUG_RECURSION) {
+				System.out.println("Konecna uroven rekurzie");
+			}
+			
 			if (currentCondition.contains("<>")) {
 				String[] tempArray = currentCondition.split(" ");
 				
@@ -169,7 +180,9 @@ public class MainFile {
 					List<String> var = findHashValue(currentCondition, f);
 					List<String> keep = new ArrayList<String>();
 					
-					//System.out.println("Pred pridanimK: " + localMap);
+					if (DEBUG_RECURSION) {
+						System.out.println("Pred pridanimK: " + localMap);
+					}
 					
 					/* Pridanie premennych do hash mapy */
 					for (String s : var) {
@@ -181,7 +194,9 @@ public class MainFile {
 						}
 					}
 					
-					//System.out.println("PridaneK: " + localMap);
+					if (DEBUG_RECURSION) {
+						System.out.println("PridaneK: " + localMap);
+					}
 					
 					/* Pridanie aplikovatelnych instancii */
 					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
@@ -195,7 +210,9 @@ public class MainFile {
 						}
 					}
 					
-					//System.out.println("OdobraneK: " + localMap);
+					if (DEBUG_RECURSION) {
+						System.out.println("OdobraneK: " + localMap);
+					}
 				}
 			}
 		}
@@ -214,7 +231,9 @@ public class MainFile {
 						List<String> var = findHashValue(currentCondition, f);
 						List<String> keep = new ArrayList<String>();
 						
-						//System.out.println("Pred pridanim: " + localMap);
+						if (DEBUG_RECURSION) {
+							System.out.println("Pred pridanim: " + localMap);
+						}
 						
 						/* Pridanie premennych do hash mapy */
 						for (String s : var) {
@@ -226,7 +245,9 @@ public class MainFile {
 							}
 						}
 						
-						//System.out.println("Pridane: " + localMap);
+						if (DEBUG_RECURSION) {
+							System.out.println("Pridane: " + localMap);
+						}
 						
 						recursion(localMap, rule, num + 1);
 						
@@ -239,7 +260,9 @@ public class MainFile {
 							}
 						}
 						
-						//System.out.println("Odobrane: " + localMap);
+						if (DEBUG_RECURSION) {
+							System.out.println("Odobrane: " + localMap);
+						}
 					}
 				}
 			}
@@ -284,12 +307,13 @@ public class MainFile {
 	private static String[] replaceVariables(String[] actions, Map<String, String> localMap) {
 		String[] temp = actions.clone();
 		
-		 /*
-		 System.out.println("REPLACE: " + Arrays.deepToString(temp) +
-		 " X: " + localMap.get("?X") +
-		 " Y: " + localMap.get("?Y") +
-		 " Z: " + localMap.get("?Z"));
-		 */
+		 if (DEBUG_REPLACE) {
+			 System.out.println("REPLACE: " + Arrays.deepToString(temp) +
+					 " X: " + localMap.get("?X") +
+					 " Y: " + localMap.get("?Y") +
+					 " Z: " + localMap.get("?Z"));
+		 }
+		 
 		
 		for (int i = 0; i < temp.length; i++) {
 			String a = temp[i];
@@ -297,9 +321,11 @@ public class MainFile {
 			
 			for (String s : tempArray)
 				if (s.contains("?") && (localMap.containsKey(s))) {
-					//System.out.println(temp[i]);
+					if (DEBUG_REPLACE) { System.out.println("Pred replace: " + temp[i]); }
+					
 					temp[i] = temp[i].replace(s, localMap.get(s));
-					//System.out.println(temp[i]);
+					
+					if (DEBUG_REPLACE) { System.out.println("Po replace: " + temp[i]); }
 				}
 		}
 		
@@ -344,7 +370,6 @@ public class MainFile {
 	/* Pridanie faktu */
 	private static boolean addFact(String fact) {
 		if (!facts.contains(fact)) {
-			//facts.add("(" + fact + ")");
 			facts.add(fact);
 			return true;
 		}
