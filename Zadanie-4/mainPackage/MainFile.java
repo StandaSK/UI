@@ -222,7 +222,7 @@ public class MainFile {
 				String[] tempArray = currentCondition.split(" ");
 				
 				if (isDifferent(tempArray[1], tempArray[2], localMap)) {
-					aplicableRules.add(replaceVariables(rule.getActions(), localMap));
+					recursion(localMap, rule, num + 1);
 				}
 			}
 			else {
